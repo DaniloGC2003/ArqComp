@@ -4,10 +4,10 @@ use ieee.numeric_std.all;
 
 entity ULA is
     port (
-        in1 : in unsigned(15 downto 0); 
-        in2 : in unsigned(15 downto 0); 
+        in1 : in unsigned(16 downto 0); 
+        in2 : in unsigned(16 downto 0); 
         select_operation : in unsigned(1 downto 0);
-        result : out unsigned(15 downto 0);
+        result : out unsigned(16 downto 0);
         carry : out std_logic;
         overflow : out std_logic
         --select_operation: "00": sum; "01": substraction; "10": and; "11": or
@@ -15,40 +15,25 @@ entity ULA is
 end ULA;
 
 architecture a_ULA of ULA is
-    signal sum_result: unsigned(16 downto 0);
+    signal sum_result: unsigned(17 downto 0);
+    signal sub_result: unsigned(17 downto 0);
+    signal and_result: unsigned(16 downto 0);
+    signal or_result: unsigned(16 downto 0);
     begin
-        --result <=   in1 + in2 when select_operation = "00" else 
-        --            in1 - in2 when select_operation = "01" else
-        --            in1 and in2 when select_operation = "10" else
-        --            in1 or in2 when select_operation = "11" else
-        --            "0000000000000000";
-        --when summing:
-        if select_operation = "00" then
-            sum_result <= ('0' & in1) + ('0' & in2);
-            result <= sum_result(15 downto 0);
-            -- carry
-            carry <= sum_result(16);
-            -- overflow
-            overflow <= '1' when (in1(15) = in2(15)) and (result(15) /= in1(15)) else
-                        '0';
-        --when subtracting:
-        elsif select_operation = "01" then
-            sum_result <= ('0' & in1) - ('0' & in2);
-            result <= sum_result(15 downto 0);
-            -- carry
-            carry <= '1' when (in1 < in2) else '0';
-            -- overflow
-            overflow <= '1' when (in1(15) /= in2(15)) and (result(15) /= in1(15)) else
-                        '0';
-        --AND:
-        elsif select_operation = "10" then
-            result <= in1 and in2;
-            carry <= '0';
-            overflow <= '0';
-        --OR:
-        elsif select_operation = "11" then
-            result <= in1 or in2;
-            carry <= '0';
-            overflow <= '0';
-        end if;
+        sum_result <= ("0" & in1) + ("0" & in2);
+        sub_result <= ("0" & in1) - ("0" & in2);
+        and_result <= in1 and in2;
+        or_result <= in1 or in2;
+        result <= sum_result(16 downto 0) when select_operation = "00" else
+                  sub_result(16 downto 0) when select_operation = "01" else
+                  and_result when select_operation = "10" else
+                  or_result when select_operation = "11" else
+                  (others => '0'); -- Default case
+        carry <= sum_result(16) when select_operation = "00" else
+                '1' when select_operation = "01" and in1 < in2 else '0';
+                    -- overflow sum: inputs with same signs and result has different sign
+                    -- overflow sub: inputs with different signs and result has different sign from in1
+        overflow <= '1' when select_operation = "00" and (in1(16) = in2(16)) and (sum_result(16) /= in1(16)) else
+                    '1' when select_operation = "01" and (in1(16) /= in2(16)) and (sub_result(16) /= in1(16)) else
+                    '0';
     end architecture;

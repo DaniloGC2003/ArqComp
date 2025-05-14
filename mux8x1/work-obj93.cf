@@ -1,0 +1,4 @@
+v 4
+file . ".\mux8x1.vhd" "2146fd166dfd6022b31cd5a508b790c450fe65ed" "20250506190340.076":
+  entity mux8x1 at 1( 0) + 0 on 11;
+  architecture a_mux8x1 of mux8x1 at 11( 236) + 0 on 12;

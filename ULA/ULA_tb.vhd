@@ -8,15 +8,15 @@ end;
 architecture a_ULA_tb of ULA_tb is
     component ULA
         port (
-            in1 : in unsigned(15 downto 0); 
-            in2 : in unsigned(15 downto 0); 
+            in1 : in unsigned(16 downto 0); 
+            in2 : in unsigned(16 downto 0); 
             select_operation : in unsigned(1 downto 0);
-            result : out unsigned(15 downto 0);
+            result : out unsigned(16 downto 0);
             carry : out std_logic;
             overflow : out std_logic
         );
     end component;
-    signal in1, in2, result : unsigned(15 downto 0);
+    signal in1, in2, result : unsigned(16 downto 0);
     signal select_operation : unsigned(1 downto 0);
     signal carry, overflow : std_logic;
 
@@ -32,26 +32,66 @@ begin
 
     process
     begin
-        in1 <= "1000000000000001";
-        in2 <= "1000000000000010";
+        -- sum with carry
+        in1 <= "10000000000000001";
+        in2 <= "10000000000000010";
         select_operation <= "00";
         wait for 50 ns;
         
-        in1 <= "0000000000000010";
-        in2 <= "0000000000000001";
+        -- subtraction with carry
+        in1 <= "00000000000000010";
+        in2 <= "10000000000000001";
         select_operation <= "01";
         wait for 50 ns;
         
-        in1 <= "1111111111111111";
-        in2 <= "1010101010101010";
-        select_operation <= "10";
+        --sum without carry
+        in1 <= "00000000100110001";
+        in2 <= "00000000100000001";
+        select_operation <= "00";
         wait for 50 ns;
         
-        in1 <= "1100110011001100";
-        in2 <= "0011001100110011";
-        select_operation <= "11";
+        -- subtraction without carry
+        in1 <= "11001100011001100";
+        in2 <= "00110011000110011";
+        select_operation <= "01";
+        wait for 50 ns;
+
+        -- sum with overflow
+        in1 <= "01000000000010100";
+        in2 <= "01000000000101000";
+        select_operation <= "00";
         wait for 50 ns;
     
+        -- subtraction with overflow
+        in1 <= "11000000000010100";
+        in2 <= "01001010000101000";
+        select_operation <= "01";
+        wait for 50 ns;
+
+        -- sum without overflow
+        in1 <= "00000000011110000";
+        in2 <= "00000000110001010";
+        select_operation <= "00";
+        wait for 50 ns;
+
+        -- subtraction without overflow
+        in1 <= "00110000000001000";
+        in2 <= "00000000001000000";
+        select_operation <= "01";
+        wait for 50 ns;
+
+        -- and operation
+        in1 <= "10000000110010010";
+        in2 <= "01100000110000100";  
+        select_operation <= "10";
+        wait for 50 ns;
+
+        -- or operation
+        in1 <= "00000010000000011";
+        in2 <= "00000010000011000";
+        select_operation <= "11";
+        wait for 50 ns;
+
         wait;
     end process;
 end architecture;
