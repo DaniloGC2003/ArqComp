@@ -1,0 +1,1 @@
+Why ALUOut is connected directly into program emmory? Because in LW and SW operations, the memory (which is both prog mem and data mem) needs to be accessed.
