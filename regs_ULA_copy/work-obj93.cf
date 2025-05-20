@@ -1,0 +1,13 @@
+v 4
+file . "reg16bits_tb.vhd" "1d4a092fb179bb6f9a7f8187fa36833042d4b17f" "20250519210434.722":
+  entity reg16bits_tb at 1( 0) + 0 on 231;
+  architecture a_reg16bits_tb of reg16bits_tb at 8( 106) + 0 on 232;
+file . "bank_regs.vhd" "782bfa150e760278a0ce2debb07fae882737bb96" "20250519210435.054":
+  entity bank_regs at 1( 0) + 0 on 233;
+  architecture a_bank_regs of bank_regs at 17( 459) + 0 on 234;
+file . "reg16bits.vhd" "03ddfab12a332a1a8eee0638c69c6932f04a2d59" "20250519210434.557":
+  entity reg16bits at 1( 0) + 0 on 229;
+  architecture a_reg16bits of reg16bits at 13( 314) + 0 on 230;
+file . "bank_regs_tb.vhd" "2376b6ae2a777dd302bb493596e29c8754ae3eb6" "20250519210435.220":
+  entity bank_regs_tb at 1( 0) + 0 on 235;
+  architecture a_bank_regs_tb of bank_regs_tb at 8( 106) + 0 on 236;

@@ -1,13 +1,13 @@
 v 4
-file . "bank_regs_tb.vhd" "29190c081d7a006391bd549d124f8b3ef8c97617" "20250515213535.476":
-  entity bank_regs_tb at 1( 0) + 0 on 165;
-  architecture a_bank_regs_tb of bank_regs_tb at 8( 106) + 0 on 166;
-file . "reg16bits.vhd" "03ddfab12a332a1a8eee0638c69c6932f04a2d59" "20250515213535.109":
-  entity reg16bits at 1( 0) + 0 on 159;
-  architecture a_reg16bits of reg16bits at 13( 314) + 0 on 160;
-file . "bank_regs.vhd" "3799065ee798b74e10592973e744911ce1eb617a" "20250515213535.374":
-  entity bank_regs at 1( 0) + 0 on 163;
-  architecture a_bank_regs of bank_regs at 17( 459) + 0 on 164;
-file . "reg16bits_tb.vhd" "1d4a092fb179bb6f9a7f8187fa36833042d4b17f" "20250515213535.203":
-  entity reg16bits_tb at 1( 0) + 0 on 161;
-  architecture a_reg16bits_tb of reg16bits_tb at 8( 106) + 0 on 162;
+file . "reg16bits_tb.vhd" "1d4a092fb179bb6f9a7f8187fa36833042d4b17f" "20250520004026.831":
+  entity reg16bits_tb at 1( 0) + 0 on 411;
+  architecture a_reg16bits_tb of reg16bits_tb at 8( 106) + 0 on 412;
+file . "bank_regs.vhd" "9389a4082a12ca9f86ab36ed36de202f8b52334a" "20250520004026.986":
+  entity bank_regs at 1( 0) + 0 on 413;
+  architecture a_bank_regs of bank_regs at 17( 397) + 0 on 414;
+file . "reg16bits.vhd" "03ddfab12a332a1a8eee0638c69c6932f04a2d59" "20250520004026.739":
+  entity reg16bits at 1( 0) + 0 on 409;
+  architecture a_reg16bits of reg16bits at 13( 314) + 0 on 410;
+file . "bank_regs_tb.vhd" "685e85dab00ccb492e4a85c242bf02a6f7066342" "20250520004027.080":
+  entity bank_regs_tb at 1( 0) + 0 on 415;
+  architecture a_bank_regs_tb of bank_regs_tb at 8( 106) + 0 on 416;

@@ -70,18 +70,10 @@ begin
         
         reg_wr <= "000";
 		wr_en <= '1';
-		data_in <= "0010000011000000";
-		wait for 200 ns;
-        reg_wr <= "011";
-        wr_en <= '1';
+		data_in <= "0000000011000000";
+		wait for 100 ns;
         reg_r <= "000";
-        data_in <= "1010000000000001";
-        wait for 200 ns;
-        wr_en <= '0';
-        reg_r <= "011";
-        wait for 200 ns;
-        reg_r <= "000";
-        wait for 200 ns;
+        wait for 100 ns;
 		wait;
 	end process;
 end architecture a_bank_regs_tb;
