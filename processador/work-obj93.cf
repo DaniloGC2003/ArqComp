@@ -1,25 +1,49 @@
 v 4
-file . "bank_ULA_tb.vhd" "5b36293da3bae3955a880fadc57c6cb4a2fedbbc" "20250520232246.302":
-  entity bank_ula_tb at 1( 0) + 0 on 585;
-  architecture a_bank_ula_tb of bank_ula_tb at 8( 105) + 0 on 586;
-file . "bank_ULA.vhd" "ffebecce2e2ba4a0418462a11c89e9f0b4fc3df8" "20250520232246.229":
-  entity bank_ula at 1( 0) + 0 on 583;
-  architecture a_bank_ula of bank_ula at 19( 448) + 0 on 584;
-file . "ULA.vhd" "c4b45b1a6957cdbd9c533974e62278926fa81335" "20250520232245.646":
-  entity ula at 1( 0) + 0 on 571;
-  architecture a_ula of ula at 17( 449) + 0 on 572;
-file . "bank_regs_tb.vhd" "685e85dab00ccb492e4a85c242bf02a6f7066342" "20250520232246.083":
-  entity bank_regs_tb at 1( 0) + 0 on 581;
-  architecture a_bank_regs_tb of bank_regs_tb at 8( 106) + 0 on 582;
-file . "reg16bits.vhd" "03ddfab12a332a1a8eee0638c69c6932f04a2d59" "20250520232245.836":
-  entity reg16bits at 1( 0) + 0 on 575;
-  architecture a_reg16bits of reg16bits at 13( 314) + 0 on 576;
-file . "bank_regs.vhd" "9389a4082a12ca9f86ab36ed36de202f8b52334a" "20250520232246.014":
-  entity bank_regs at 1( 0) + 0 on 579;
-  architecture a_bank_regs of bank_regs at 17( 397) + 0 on 580;
-file . "reg16bits_tb.vhd" "1d4a092fb179bb6f9a7f8187fa36833042d4b17f" "20250520232245.900":
-  entity reg16bits_tb at 1( 0) + 0 on 577;
-  architecture a_reg16bits_tb of reg16bits_tb at 8( 106) + 0 on 578;
+file . "pc_uc_tb.vhd" "bb07810128d9648404b5d9588761b09c1b56972a" "20250521214825.747":
+  entity pc_uc_tb at 1( 0) + 0 on 623;
+  architecture a_pc_uc_tb of pc_uc_tb at 8( 102) + 0 on 624;
+file . "uc.vhd" "a49bf16e8276f091b79749481556cd981955c5c8" "20250521214825.608":
+  entity uc at 1( 0) + 0 on 619;
+  architecture a_uc of uc at 13( 305) + 0 on 620;
+file . "state_machine_tb.vhd" "bcec259110d1b6f0f1f1043fb1a7b48a759cb663" "20250521195048.461":
+  entity state_machine_tb at 1( 0) + 0 on 607;
+  architecture a_state_machine_tb of state_machine_tb at 8( 110) + 0 on 608;
+file . "state_machine.vhd" "a33b2ca0252868bb874781d7fe482b31cbcd04a9" "20250521195048.390":
+  entity state_machine at 1( 0) + 0 on 605;
+  architecture a_state_machine of state_machine at 12( 226) + 0 on 606;
+file . "rom_tb.vhd" "0983631207c17b7d7ecd8aaef8524beaa848f0a7" "20250521190434.934":
+  entity rom_tb at 1( 0) + 0 on 601;
+  architecture a_rom_tb of rom_tb at 8( 100) + 0 on 602;
 file . "ULA_tb.vhd" "f8c12bd96de2e528d39dae2044130f3cebd304ea" "20250520232245.713":
   entity ula_tb at 1( 0) + 0 on 573;
   architecture a_ula_tb of ula_tb at 8( 100) + 0 on 574;
+file . "reg16bits_tb.vhd" "1d4a092fb179bb6f9a7f8187fa36833042d4b17f" "20250520232245.900":
+  entity reg16bits_tb at 1( 0) + 0 on 577;
+  architecture a_reg16bits_tb of reg16bits_tb at 8( 106) + 0 on 578;
+file . "bank_regs.vhd" "9389a4082a12ca9f86ab36ed36de202f8b52334a" "20250520232246.014":
+  entity bank_regs at 1( 0) + 0 on 579;
+  architecture a_bank_regs of bank_regs at 17( 397) + 0 on 580;
+file . "reg16bits.vhd" "03ddfab12a332a1a8eee0638c69c6932f04a2d59" "20250520232245.836":
+  entity reg16bits at 1( 0) + 0 on 575;
+  architecture a_reg16bits of reg16bits at 13( 314) + 0 on 576;
+file . "bank_regs_tb.vhd" "685e85dab00ccb492e4a85c242bf02a6f7066342" "20250520232246.083":
+  entity bank_regs_tb at 1( 0) + 0 on 581;
+  architecture a_bank_regs_tb of bank_regs_tb at 8( 106) + 0 on 582;
+file . "ULA.vhd" "c4b45b1a6957cdbd9c533974e62278926fa81335" "20250520232245.646":
+  entity ula at 1( 0) + 0 on 571;
+  architecture a_ula of ula at 17( 449) + 0 on 572;
+file . "bank_ULA.vhd" "ffebecce2e2ba4a0418462a11c89e9f0b4fc3df8" "20250520232246.229":
+  entity bank_ula at 1( 0) + 0 on 583;
+  architecture a_bank_ula of bank_ula at 19( 448) + 0 on 584;
+file . "bank_ULA_tb.vhd" "5b36293da3bae3955a880fadc57c6cb4a2fedbbc" "20250520232246.302":
+  entity bank_ula_tb at 1( 0) + 0 on 585;
+  architecture a_bank_ula_tb of bank_ula_tb at 8( 105) + 0 on 586;
+file . "rom.vhd" "944d74ee47d39145bafdeed9158751a57dfe0273" "20250521190434.860":
+  entity rom at 1( 0) + 0 on 599;
+  architecture a_rom of rom at 10( 236) + 0 on 600;
+file . "pc.vhd" "6f31d835912b08137affbfdbe370ed3f0433401f" "20250521214825.538":
+  entity pc at 1( 0) + 0 on 617;
+  architecture a_pc of pc at 13( 305) + 0 on 618;
+file . "pc_uc.vhd" "379f0c9a4bbb3e1758146d2310382ed48f33c081" "20250521214825.677":
+  entity pc_uc at 1( 0) + 0 on 621;
+  architecture a_pc_uc of pc_uc at 12( 217) + 0 on 622;
