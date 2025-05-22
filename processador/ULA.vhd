@@ -28,9 +28,9 @@ architecture a_ULA of ULA is
                   sub_result(15 downto 0) when select_operation = "01" else
                   and_result when select_operation = "10" else
                   or_result when select_operation = "11" else
-                  (others => '0'); -- Default case
+                  (others => '0');
         carry <= sum_result(16) when select_operation = "00" else
-                '1' when select_operation = "01" and in1 < in2 else '0';
+                '1' when select_operation = "01" and in1 < in2 else '0'; -- editar depois.
                     -- overflow sum: inputs with same signs and result has different sign
                     -- overflow sub: inputs with different signs and result has different sign from in1
         overflow <= '1' when select_operation = "00" and (in1(15) = in2(15)) and (sum_result(15) /= in1(15)) else 

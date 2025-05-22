@@ -8,7 +8,7 @@ entity bank_ULA is
       reg_wr   : in unsigned(2 downto 0);
       clk      : in std_logic;
       rst      : in std_logic;
-      wr_en    : in std_logic;
+      wr_en    : in std_logic; 
       data_in  : in unsigned(15 downto 0);
       data_out : out unsigned(15 downto 0);
 

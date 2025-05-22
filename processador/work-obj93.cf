@@ -1,49 +1,49 @@
 v 4
-file . "pc_uc.vhd" "63c552e2193962921864274b34a146b1a692fb4a" "20250522003153.833":
-  entity pc_uc at 1( 0) + 0 on 787;
-  architecture a_pc_uc of pc_uc at 12( 217) + 0 on 788;
-file . "pc.vhd" "6f31d835912b08137affbfdbe370ed3f0433401f" "20250522003153.696":
-  entity pc at 1( 0) + 0 on 783;
-  architecture a_pc of pc at 13( 305) + 0 on 784;
-file . "rom.vhd" "a3bd90c1f30774ce39c759f3285c61980a98fd0a" "20250522003153.513":
-  entity rom at 1( 0) + 0 on 779;
-  architecture a_rom of rom at 10( 236) + 0 on 780;
-file . "bank_ULA_tb.vhd" "5b36293da3bae3955a880fadc57c6cb4a2fedbbc" "20250522003153.323":
-  entity bank_ula_tb at 1( 0) + 0 on 777;
-  architecture a_bank_ula_tb of bank_ula_tb at 8( 105) + 0 on 778;
-file . "bank_ULA.vhd" "ffebecce2e2ba4a0418462a11c89e9f0b4fc3df8" "20250522003153.251":
-  entity bank_ula at 1( 0) + 0 on 775;
-  architecture a_bank_ula of bank_ula at 19( 448) + 0 on 776;
-file . "ULA.vhd" "c4b45b1a6957cdbd9c533974e62278926fa81335" "20250522003152.684":
-  entity ula at 1( 0) + 0 on 763;
-  architecture a_ula of ula at 17( 449) + 0 on 764;
-file . "bank_regs_tb.vhd" "685e85dab00ccb492e4a85c242bf02a6f7066342" "20250522003153.114":
-  entity bank_regs_tb at 1( 0) + 0 on 773;
-  architecture a_bank_regs_tb of bank_regs_tb at 8( 106) + 0 on 774;
-file . "reg16bits.vhd" "03ddfab12a332a1a8eee0638c69c6932f04a2d59" "20250522003152.869":
-  entity reg16bits at 1( 0) + 0 on 767;
-  architecture a_reg16bits of reg16bits at 13( 314) + 0 on 768;
-file . "bank_regs.vhd" "9389a4082a12ca9f86ab36ed36de202f8b52334a" "20250522003153.044":
-  entity bank_regs at 1( 0) + 0 on 771;
-  architecture a_bank_regs of bank_regs at 17( 397) + 0 on 772;
-file . "reg16bits_tb.vhd" "1d4a092fb179bb6f9a7f8187fa36833042d4b17f" "20250522003152.932":
-  entity reg16bits_tb at 1( 0) + 0 on 769;
-  architecture a_reg16bits_tb of reg16bits_tb at 8( 106) + 0 on 770;
-file . "ULA_tb.vhd" "f8c12bd96de2e528d39dae2044130f3cebd304ea" "20250522003152.747":
-  entity ula_tb at 1( 0) + 0 on 765;
-  architecture a_ula_tb of ula_tb at 8( 100) + 0 on 766;
-file . "rom_tb.vhd" "0983631207c17b7d7ecd8aaef8524beaa848f0a7" "20250522003153.578":
-  entity rom_tb at 1( 0) + 0 on 781;
-  architecture a_rom_tb of rom_tb at 8( 100) + 0 on 782;
-file . "state_machine.vhd" "a33b2ca0252868bb874781d7fe482b31cbcd04a9" "20250522003154.033":
-  entity state_machine at 1( 0) + 0 on 791;
-  architecture a_state_machine of state_machine at 12( 226) + 0 on 792;
-file . "state_machine_tb.vhd" "bcec259110d1b6f0f1f1043fb1a7b48a759cb663" "20250522003154.105":
-  entity state_machine_tb at 1( 0) + 0 on 793;
-  architecture a_state_machine_tb of state_machine_tb at 8( 110) + 0 on 794;
-file . "uc.vhd" "a49bf16e8276f091b79749481556cd981955c5c8" "20250522003153.763":
-  entity uc at 1( 0) + 0 on 785;
-  architecture a_uc of uc at 13( 305) + 0 on 786;
-file . "pc_uc_tb.vhd" "bb07810128d9648404b5d9588761b09c1b56972a" "20250522003153.901":
-  entity pc_uc_tb at 1( 0) + 0 on 789;
-  architecture a_pc_uc_tb of pc_uc_tb at 8( 102) + 0 on 790;
+file . "pc_uc.vhd" "63c552e2193962921864274b34a146b1a692fb4a" "20250522195300.831":
+  entity pc_uc at 1( 0) + 0 on 875;
+  architecture a_pc_uc of pc_uc at 12( 217) + 0 on 876;
+file . "pc.vhd" "6f31d835912b08137affbfdbe370ed3f0433401f" "20250522195300.630":
+  entity pc at 1( 0) + 0 on 871;
+  architecture a_pc of pc at 13( 305) + 0 on 872;
+file . "rom.vhd" "a3bd90c1f30774ce39c759f3285c61980a98fd0a" "20250522195300.336":
+  entity rom at 1( 0) + 0 on 867;
+  architecture a_rom of rom at 10( 236) + 0 on 868;
+file . "bank_ULA_tb.vhd" "5b36293da3bae3955a880fadc57c6cb4a2fedbbc" "20250522195300.088":
+  entity bank_ula_tb at 1( 0) + 0 on 865;
+  architecture a_bank_ula_tb of bank_ula_tb at 8( 105) + 0 on 866;
+file . "bank_ULA.vhd" "ffebecce2e2ba4a0418462a11c89e9f0b4fc3df8" "20250522195259.985":
+  entity bank_ula at 1( 0) + 0 on 863;
+  architecture a_bank_ula of bank_ula at 19( 448) + 0 on 864;
+file . "ULA.vhd" "cf19044961c935565abd63856caa9a78955b1f08" "20250522195259.181":
+  entity ula at 1( 0) + 0 on 851;
+  architecture a_ula of ula at 17( 449) + 0 on 852;
+file . "bank_regs_tb.vhd" "685e85dab00ccb492e4a85c242bf02a6f7066342" "20250522195259.814":
+  entity bank_regs_tb at 1( 0) + 0 on 861;
+  architecture a_bank_regs_tb of bank_regs_tb at 8( 106) + 0 on 862;
+file . "reg16bits.vhd" "03ddfab12a332a1a8eee0638c69c6932f04a2d59" "20250522195259.463":
+  entity reg16bits at 1( 0) + 0 on 855;
+  architecture a_reg16bits of reg16bits at 13( 314) + 0 on 856;
+file . "bank_regs.vhd" "d77ee2fd14958469bde44aadc62bf12605331fbf" "20250522195259.714":
+  entity bank_regs at 1( 0) + 0 on 859;
+  architecture a_bank_regs of bank_regs at 17( 397) + 0 on 860;
+file . "reg16bits_tb.vhd" "1d4a092fb179bb6f9a7f8187fa36833042d4b17f" "20250522195259.555":
+  entity reg16bits_tb at 1( 0) + 0 on 857;
+  architecture a_reg16bits_tb of reg16bits_tb at 8( 106) + 0 on 858;
+file . "ULA_tb.vhd" "f8c12bd96de2e528d39dae2044130f3cebd304ea" "20250522195259.280":
+  entity ula_tb at 1( 0) + 0 on 853;
+  architecture a_ula_tb of ula_tb at 8( 100) + 0 on 854;
+file . "rom_tb.vhd" "0983631207c17b7d7ecd8aaef8524beaa848f0a7" "20250522195300.449":
+  entity rom_tb at 1( 0) + 0 on 869;
+  architecture a_rom_tb of rom_tb at 8( 100) + 0 on 870;
+file . "state_machine.vhd" "a33b2ca0252868bb874781d7fe482b31cbcd04a9" "20250522195301.133":
+  entity state_machine at 1( 0) + 0 on 879;
+  architecture a_state_machine of state_machine at 12( 226) + 0 on 880;
+file . "state_machine_tb.vhd" "bcec259110d1b6f0f1f1043fb1a7b48a759cb663" "20250522195301.229":
+  entity state_machine_tb at 1( 0) + 0 on 881;
+  architecture a_state_machine_tb of state_machine_tb at 8( 110) + 0 on 882;
+file . "uc.vhd" "a49bf16e8276f091b79749481556cd981955c5c8" "20250522195300.731":
+  entity uc at 1( 0) + 0 on 873;
+  architecture a_uc of uc at 13( 305) + 0 on 874;
+file . "pc_uc_tb.vhd" "bb07810128d9648404b5d9588761b09c1b56972a" "20250522195300.931":
+  entity pc_uc_tb at 1( 0) + 0 on 877;
+  architecture a_pc_uc_tb of pc_uc_tb at 8( 102) + 0 on 878;

@@ -42,7 +42,6 @@ architecture a_bank_regs of bank_regs is
 
 begin
 
-   -- Write enable logic
    wr_en_0 <= '1' when (wr_en = '1' and reg_wr = "000") else '0';
    wr_en_1 <= '1' when (wr_en = '1' and reg_wr = "001") else '0';
    wr_en_2 <= '1' when (wr_en = '1' and reg_wr = "010") else '0';
@@ -51,7 +50,6 @@ begin
    wr_en_5 <= '1' when (wr_en = '1' and reg_wr = "101") else '0';
    wr_en_6 <= '1' when (wr_en = '1' and reg_wr = "110") else '0';
 
-   -- Register instantiation
    reg0: reg16bits
       port map(
          clk      => clk,
@@ -108,32 +106,14 @@ begin
          data_in  => data_in,
          data_out => data_out_6
       );
-
-   process(rst, clk)
-   begin
-      if rising_edge(clk) then
-         if reg_r = "000" then
-            data_out <= data_out_0;
-         elsif reg_r = "001" then
-            data_out <= data_out_1;
-         elsif reg_r = "010" then
-            data_out <= data_out_2;
-         elsif reg_r = "011" then
-            data_out <= data_out_3;
-         elsif reg_r = "100" then
-            data_out <= data_out_4; 
-         elsif reg_r = "101" then
-            data_out <= data_out_5; 
-         elsif reg_r = "110" then
-            data_out <= data_out_6;  
-         else
-            data_out <= (others => '0');  -- reset output
-         end if;
-      end if;
-
-      if rst = '1' then
-         data_out <= (others => '0');  -- reset output
-      end if;
-   end process;
+   --uso de process: nao recomendado
+   data_out <= data_out_0 when (reg_r = "000") else
+               data_out_1 when (reg_r = "001") else
+               data_out_2 when (reg_r = "010") else
+               data_out_3 when (reg_r = "011") else
+               data_out_4 when (reg_r = "100") else
+               data_out_5 when (reg_r = "101") else
+               data_out_6 when (reg_r = "110") else
+               (others => '0');
 
 end architecture;
