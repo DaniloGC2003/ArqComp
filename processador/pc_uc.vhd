@@ -23,7 +23,9 @@ architecture a_pc_uc of pc_uc is
             rst      : in std_logic;
             wr_en    : in std_logic;
             data_in  : in unsigned(6 downto 0);
-            data_out : out unsigned(6 downto 0)
+            data_out : out unsigned(6 downto 0);
+            jump_en     : out std_logic;
+            instruction  : in unsigned(16 downto 0)
       );
    end component;
    component rom is
@@ -43,15 +45,17 @@ architecture a_pc_uc of pc_uc is
    signal out_uc: unsigned(6 downto 0);
    signal out_rom: unsigned(16 downto 0);
    signal out_sm: std_logic;
-   signal wr_en_pc: std_logic;
+   signal pc_clk: std_logic;
    signal rom_clk: std_logic;
+
+   signal uc_jump_en: std_logic;
 begin
 
    pc_inst: pc
       port map(
-         clk      => clk,
+         clk      => pc_clk,
          rst      => rst,
-         wr_en    => wr_en_pc,
+         wr_en    => wr_en,
          data_in  => out_uc,
          data_out => out_pc
       );
@@ -62,7 +66,9 @@ begin
          rst      => rst,
          wr_en    => '1',
          data_in  => out_pc,
-         data_out => out_uc
+         data_out => out_uc,
+         jump_en  => uc_jump_en,
+         instruction => out_rom
       );
 
    rom_inst: rom
@@ -79,7 +85,7 @@ begin
          data_out => out_sm
       );
    
-   wr_en_pc <= '1' when out_sm = '1' else '0';
+   pc_clk <= '1' when out_sm = '1' else '0';
    rom_clk <= '0' when out_sm = '1' else '1';
 
 end architecture;

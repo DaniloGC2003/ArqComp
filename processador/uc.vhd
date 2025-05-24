@@ -1,28 +1,32 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+
+-- bits [16:13] = opcode
+-- opcode: 1111 = jump
+-- bits [12:6] = immediate
 entity uc is
    port( clk      : in std_logic;
          rst      : in std_logic;
          wr_en    : in std_logic;
          data_in  : in unsigned(6 downto 0);
-         data_out : out unsigned(6 downto 0)
+         data_out : out unsigned(6 downto 0);
+
+         jump_en      : out std_logic;
+         instruction  : in unsigned(16 downto 0)
    );
 end entity;
 
 architecture a_uc of uc is
-   signal registro: unsigned(6 downto 0);
+   signal opcode: unsigned(3 downto 0);
+   signal immediate: unsigned(6 downto 0);
+   signal j_en: std_logic;
 begin
-   process(clk,rst,wr_en)
-   begin                
-      if rst='1' then
-         registro <= "0000000";
-      elsif wr_en='1' then
-         if rising_edge(clk) then
-            registro <= data_in + 1;
-         end if;
-      end if;
-   end process;
-   
-   data_out <= registro;  -- conexao direta, fora do processo
+   opcode <= instruction(16 downto 13);
+   j_en <= '1' when opcode = "1111" else '0';
+   jump_en <= j_en;
+   immediate <= instruction(12 downto 6);
+   data_out <= data_in + 1 when j_en = '0' else 
+               immediate;
+   --data_out <= data_in + 1;  -- conexao direta, fora do processo
 end architecture;
