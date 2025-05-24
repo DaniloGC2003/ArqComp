@@ -9,20 +9,20 @@ architecture a_state_machine_tb of state_machine_tb is
     component state_machine is
         port(    clk      : in std_logic;
                  rst      : in std_logic;
-                 data_out : out std_logic
+                 estado   : out unsigned(1 downto 0)
         );
     end component;
 
     constant period_time : time      := 100 ns;
     signal   finished    : std_logic := '0';
     signal   clk, reset  : std_logic;
-    signal   data_out    : std_logic;
+    signal   estado      : unsigned(1 downto 0);
 
 begin
 	uut: state_machine port map (
 		clk => clk,
 		rst => reset,
-		data_out => data_out
+		estado => estado
 	);
 
 	reset_global: process

@@ -37,14 +37,14 @@ architecture a_pc_uc of pc_uc is
    component state_machine is
       port( clk      : in std_logic;
             rst      : in std_logic;
-            data_out : out std_logic
+            estado : out unsigned(1 downto 0)
       );
    end component;
 
    signal out_pc: unsigned(6 downto 0);
    signal out_uc: unsigned(6 downto 0);
    signal out_rom: unsigned(16 downto 0);
-   signal out_sm: std_logic;
+   signal out_sm: unsigned(1 downto 0);
    signal pc_clk: std_logic;
    signal rom_clk: std_logic;
 
@@ -82,10 +82,10 @@ begin
       port map(
          clk      => clk,
          rst      => rst,
-         data_out => out_sm
+         estado   => out_sm
       );
-   
-   pc_clk <= '1' when out_sm = '1' else '0';
-   rom_clk <= '0' when out_sm = '1' else '1';
+
+   pc_clk <= '1' when out_sm = "01" else '0';
+   rom_clk <= '1' when out_sm = "00" else '0';
 
 end architecture;
