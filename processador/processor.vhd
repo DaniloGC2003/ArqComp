@@ -34,6 +34,16 @@ architecture a_processor of processor is
       );
    end component;
 
+   component reg_instruction is
+      port(
+         clk      : in std_logic;
+         rst      : in std_logic;
+         wr_en    : in std_logic;
+         data_in  : in unsigned(16 downto 0);
+         data_out : out unsigned(16 downto 0)
+      );
+   end component;
+
 begin
     pc_uc_inst: pc_uc
         port map(
@@ -52,6 +62,15 @@ begin
             data_in  => (others => '0'),  -- Example data input
             data_out => bank_reg_out,
             select_operation => "00"  -- Example operation selection
+        );
+    
+    reg_instruction_inst: reg_instruction
+        port map(
+            clk      => clk,
+            rst      => rst,
+            wr_en    => '1',  -- Assuming write enable is always high for this example
+            data_in  => (others => '0'),  -- Example instruction input
+            data_out => instruction
         );
 
 
