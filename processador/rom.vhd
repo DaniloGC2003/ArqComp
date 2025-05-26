@@ -21,8 +21,8 @@ architecture a_rom of rom is
       7  => "10000000000000111",
       8  => "10000000000001000",
       9  => "10000000000001001",
-      10 => "10000000000001010",
-      11 => "11110001000001011",
+      10 => "10000000000001010", -- A
+      11 => "11110001000001011", -- B. instruction says "jump to 8"
       -- abaixo: casos omissos => (zero em todos os bits)
       others => (others=>'0')
    );

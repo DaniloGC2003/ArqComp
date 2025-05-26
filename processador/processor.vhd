@@ -9,7 +9,7 @@ entity processor is
          PC      : out unsigned(6 downto 0);
          instruction : out unsigned(16 downto 0);
          bank_reg_out : out unsigned(15 downto 0);
-         accumulator_out : out unsigned(15 downto 0);
+         accumulator_out : out unsigned(15 downto 0)
    );
 end entity;
 
@@ -17,7 +17,8 @@ architecture a_processor of processor is
    component pc_uc is
       port( clk      : in std_logic;
             rst      : in std_logic;
-            wr_en    : in std_logic
+            wr_en    : in std_logic;
+            rom_instr  : out unsigned(16 downto 0)
       );
    end component;
 
@@ -44,12 +45,16 @@ architecture a_processor of processor is
       );
    end component;
 
+   signal rom_instr: unsigned(16 downto 0);
+   signal reg_instruction_out: unsigned(16 downto 0);
+
 begin
     pc_uc_inst: pc_uc
         port map(
             clk      => clk,
             rst      => rst,
-            wr_en    => '1'  -- Assuming write enable is always high for this example
+            wr_en    => '1',  -- Assuming write enable is always high for this example
+            rom_instr => rom_instr
         );
     
     bank_ULA_inst: bank_ULA
@@ -69,10 +74,10 @@ begin
             clk      => clk,
             rst      => rst,
             wr_en    => '1',  -- Assuming write enable is always high for this example
-            data_in  => (others => '0'),  -- Example instruction input
-            data_out => instruction
+            data_in  => rom_instr,  -- Input from the ROM instruction
+            data_out => reg_instruction_out
         );
 
-
+      instruction <= rom_instr;  -- Output the instruction from ROM
 
     end architecture;

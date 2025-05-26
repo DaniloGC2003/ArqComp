@@ -5,7 +5,8 @@ use ieee.numeric_std.all;
 entity pc_uc is
    port( clk      : in std_logic;
          rst      : in std_logic;
-         wr_en    : in std_logic
+         wr_en    : in std_logic;
+         current_instr  : out unsigned(16 downto 0)
    );
 end entity;
 
@@ -41,13 +42,22 @@ architecture a_pc_uc of pc_uc is
       );
    end component;
 
+   component reg_instruction is
+      port( clk      : in std_logic;
+            rst      : in std_logic;
+            wr_en    : in std_logic;
+            data_in  : in unsigned(16 downto 0);
+            data_out : out unsigned(16 downto 0)
+      );
+   end component;
+
    signal out_pc: unsigned(6 downto 0);
    signal out_uc: unsigned(6 downto 0);
    signal out_rom: unsigned(16 downto 0);
    signal out_sm: unsigned(1 downto 0);
    signal pc_clk: std_logic;
    signal rom_clk: std_logic;
-
+   signal instr_reg_out: unsigned(16 downto 0);
    signal uc_jump_en: std_logic;
 begin
 
@@ -68,7 +78,7 @@ begin
          data_in  => out_pc,
          data_out => out_uc,
          jump_en  => uc_jump_en,
-         instruction => out_rom
+         instruction => instr_reg_out
       );
 
    rom_inst: rom
@@ -84,8 +94,19 @@ begin
          rst      => rst,
          estado   => out_sm
       );
+   
+   reg_instr_inst: reg_instruction
+      port map(
+         clk      => rom_clk,
+         rst      => rst,
+         wr_en    => '1',  -- Assuming write enable is always high for this example
+         data_in  => out_rom,
+         data_out => instr_reg_out
+      );
 
+   
    pc_clk <= '1' when out_sm = "01" else '0';
    rom_clk <= '1' when out_sm = "00" else '0';
+   current_instr <= instr_reg_out;
 
 end architecture;
