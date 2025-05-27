@@ -4,6 +4,9 @@ ghdl -e pc
 ghdl -a uc.vhd
 ghdl -e uc
 
+ghdl -a reg_instruction.vhd
+ghdl -e reg_instruction
+
 ghdl -a pc_uc.vhd
 ghdl -e pc_uc
 

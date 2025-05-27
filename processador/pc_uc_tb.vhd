@@ -17,12 +17,12 @@ architecture a_pc_uc_tb of pc_uc_tb is
     constant period_time : time      := 100 ns;
     signal   finished    : std_logic := '0';
     signal   clk, reset  : std_logic;
-
+    signal   wr_en       : std_logic := '0';  -- Write enable signal, initially set to '0'
 begin
 	uut: pc_uc port map (
 		clk => clk,
 		rst => reset,
-		wr_en => '1',
+		wr_en => wr_en,
         current_instr => open  -- Assuming the output is not used in this testbench
 	);
 
@@ -55,6 +55,9 @@ begin
 	process
 	begin
 		wait for 200 ns;
+        wr_en <= '0';
+        wait for 100 ns;
+        wr_en <= '1';
 		wait;
 	end process;
 end architecture a_pc_uc_tb;

@@ -56,7 +56,7 @@ architecture a_pc_uc of pc_uc is
    signal out_rom: unsigned(16 downto 0);
    signal out_sm: unsigned(1 downto 0);
    signal pc_clk: std_logic;
-   signal rom_clk: std_logic;
+   signal instr_reg_clk: std_logic;
    signal instr_reg_out: unsigned(16 downto 0);
    signal uc_jump_en: std_logic;
 begin
@@ -83,7 +83,7 @@ begin
 
    rom_inst: rom
       port map(
-         clk      => rom_clk,
+         clk      => clk,
          endereco => out_pc,
          dado     => out_rom
       );
@@ -97,16 +97,16 @@ begin
    
    reg_instr_inst: reg_instruction
       port map(
-         clk      => rom_clk,
+         clk      => instr_reg_clk,
          rst      => rst,
-         wr_en    => '1',  -- Assuming write enable is always high for this example
+         wr_en    => '1',
          data_in  => out_rom,
          data_out => instr_reg_out
       );
 
-   
+   -- problema: logo depois do reset, o pc recebe o valor 1, de forma que a primeira instrucao da rom eh ignorada
    pc_clk <= '1' when out_sm = "01" else '0';
-   rom_clk <= '1' when out_sm = "00" else '0';
+   instr_reg_clk <= '1' when out_sm = "00" else '0';
    current_instr <= instr_reg_out;
 
 end architecture;

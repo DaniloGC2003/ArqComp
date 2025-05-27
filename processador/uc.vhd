@@ -23,10 +23,10 @@ architecture a_uc of uc is
    signal j_en: std_logic;
 begin
    opcode <= instruction(16 downto 13);
-   j_en <= '1' when opcode = "1111" else '0';
+   j_en <= '0' when rst = '1' else '1' when opcode = "1111" else '0';
    jump_en <= j_en;
    immediate <= instruction(12 downto 6);
-   data_out <= data_in + 1 when j_en = '0' else 
+   data_out <= (others => '0') when rst = '1' else
+               data_in + 1 when j_en = '0' else 
                immediate;
-   --data_out <= data_in + 1;  -- conexao direta, fora do processo
 end architecture;

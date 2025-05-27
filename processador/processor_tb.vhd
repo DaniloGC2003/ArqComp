@@ -67,6 +67,7 @@ begin
 	process
 	begin
 		wait for 200 ns;
+        
 		wait;
 	end process;
 end architecture a_processor_tb;

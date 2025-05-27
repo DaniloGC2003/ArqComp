@@ -18,7 +18,7 @@ architecture a_processor of processor is
       port( clk      : in std_logic;
             rst      : in std_logic;
             wr_en    : in std_logic;
-            rom_instr  : out unsigned(16 downto 0)
+            current_instr  : out unsigned(16 downto 0)
       );
    end component;
 
@@ -35,17 +35,7 @@ architecture a_processor of processor is
       );
    end component;
 
-   component reg_instruction is
-      port(
-         clk      : in std_logic;
-         rst      : in std_logic;
-         wr_en    : in std_logic;
-         data_in  : in unsigned(16 downto 0);
-         data_out : out unsigned(16 downto 0)
-      );
-   end component;
-
-   signal rom_instr: unsigned(16 downto 0);
+   signal current_instr: unsigned(16 downto 0);
    signal reg_instruction_out: unsigned(16 downto 0);
 
 begin
@@ -54,7 +44,7 @@ begin
             clk      => clk,
             rst      => rst,
             wr_en    => '1',  -- Assuming write enable is always high for this example
-            rom_instr => rom_instr
+            current_instr => current_instr
         );
     
     bank_ULA_inst: bank_ULA
@@ -68,16 +58,8 @@ begin
             data_out => bank_reg_out,
             select_operation => "00"  -- Example operation selection
         );
-    
-    reg_instruction_inst: reg_instruction
-        port map(
-            clk      => clk,
-            rst      => rst,
-            wr_en    => '1',  -- Assuming write enable is always high for this example
-            data_in  => rom_instr,  -- Input from the ROM instruction
-            data_out => reg_instruction_out
-        );
+   
 
-      instruction <= rom_instr;  -- Output the instruction from ROM
+      instruction <= current_instr;  -- Output the instruction from ROM
 
     end architecture;
