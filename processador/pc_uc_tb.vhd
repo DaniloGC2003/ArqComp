@@ -9,21 +9,24 @@ architecture a_pc_uc_tb of pc_uc_tb is
     component pc_uc is
         port(    clk      : in std_logic;
                  rst      : in std_logic;
-                 wr_en    : in std_logic;
-                 current_instr  : out unsigned(16 downto 0)  -- Assuming this is the output
+                 current_instr  : out unsigned(16 downto 0);
+                 add_op      : out std_logic;
+                 ld_op       : out std_logic; -- load immediate operation
+                 reg_r1      : out unsigned(2 downto 0)
         );
     end component;
 
     constant period_time : time      := 100 ns;
     signal   finished    : std_logic := '0';
     signal   clk, reset  : std_logic;
-    signal   wr_en       : std_logic := '0';  -- Write enable signal, initially set to '0'
 begin
 	uut: pc_uc port map (
 		clk => clk,
 		rst => reset,
-		wr_en => wr_en,
-        current_instr => open  -- Assuming the output is not used in this testbench
+        current_instr => open,  -- Assuming the output is not used in this testbench
+        add_op      => open,
+        ld_op       => open,
+        reg_r1      => open
 	);
 
 	reset_global: process
@@ -55,9 +58,6 @@ begin
 	process
 	begin
 		wait for 200 ns;
-        wr_en <= '0';
-        wait for 100 ns;
-        wr_en <= '1';
 		wait;
 	end process;
 end architecture a_pc_uc_tb;

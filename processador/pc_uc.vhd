@@ -5,8 +5,11 @@ use ieee.numeric_std.all;
 entity pc_uc is
    port( clk      : in std_logic;
          rst      : in std_logic;
-         wr_en    : in std_logic;
-         current_instr  : out unsigned(16 downto 0)
+         current_instr  : out unsigned(16 downto 0);
+
+         add_op      : out std_logic;
+         ld_op       : out std_logic; -- load immediate operation
+         reg_r1      : out unsigned(2 downto 0)
    );
 end entity;
 
@@ -20,13 +23,15 @@ architecture a_pc_uc of pc_uc is
       );
    end component;
    component uc is
-      port( clk      : in std_logic;
+      port( 
             rst      : in std_logic;
-            wr_en    : in std_logic;
             data_in  : in unsigned(6 downto 0);
             data_out : out unsigned(6 downto 0);
             jump_en     : out std_logic;
-            instruction  : in unsigned(16 downto 0)
+            add_op      : out std_logic;
+            ld_op       : out std_logic; -- load immediate operation
+            instruction  : in unsigned(16 downto 0);
+            reg1         : out unsigned(2 downto 0)
       );
    end component;
    component rom is
@@ -55,30 +60,31 @@ architecture a_pc_uc of pc_uc is
    signal out_uc: unsigned(6 downto 0);
    signal out_rom: unsigned(16 downto 0);
    signal out_sm: unsigned(1 downto 0);
-   signal pc_clk: std_logic;
-   signal instr_reg_clk: std_logic;
+   signal instr_reg_wr_en: std_logic;
+   signal pc_wr_en: std_logic;
    signal instr_reg_out: unsigned(16 downto 0);
    signal uc_jump_en: std_logic;
 begin
 
    pc_inst: pc
       port map(
-         clk      => pc_clk,
+         clk      => clk,
          rst      => rst,
-         wr_en    => wr_en,
+         wr_en    => pc_wr_en,
          data_in  => out_uc,
          data_out => out_pc
       );
 
    uc_inst: uc
       port map(
-         clk      => clk,
          rst      => rst,
-         wr_en    => '1',
          data_in  => out_pc,
          data_out => out_uc,
          jump_en  => uc_jump_en,
-         instruction => instr_reg_out
+         add_op   => add_op,
+         ld_op    => ld_op,
+         instruction => instr_reg_out,
+         reg1     => reg_r1
       );
 
    rom_inst: rom
@@ -97,16 +103,16 @@ begin
    
    reg_instr_inst: reg_instruction
       port map(
-         clk      => instr_reg_clk,
+         clk      => clk,
          rst      => rst,
-         wr_en    => '1',
+         wr_en    => instr_reg_wr_en,
          data_in  => out_rom,
          data_out => instr_reg_out
       );
 
    -- problema: logo depois do reset, o pc recebe o valor 1, de forma que a primeira instrucao da rom eh ignorada
-   pc_clk <= '1' when out_sm = "01" else '0';
-   instr_reg_clk <= '1' when out_sm = "00" else '0';
+   pc_wr_en <= '1' when out_sm = "00" else '0';
+   instr_reg_wr_en <= '1' when out_sm = "10" else '0';
    current_instr <= instr_reg_out;
 
 end architecture;
