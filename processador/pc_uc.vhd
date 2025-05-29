@@ -6,7 +6,7 @@ entity pc_uc is
    port( clk      : in std_logic;
          rst      : in std_logic;
          current_instr  : out unsigned(16 downto 0);
-
+         immediate    : out unsigned(6 downto 0);
          add_op      : out std_logic;
          ld_op       : out std_logic; -- load immediate operation
          reg_r1      : out unsigned(2 downto 0)
@@ -31,6 +31,7 @@ architecture a_pc_uc of pc_uc is
             add_op      : out std_logic;
             ld_op       : out std_logic; -- load immediate operation
             instruction  : in unsigned(16 downto 0);
+            immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(2 downto 0)
       );
    end component;
@@ -64,6 +65,7 @@ architecture a_pc_uc of pc_uc is
    signal pc_wr_en: std_logic;
    signal instr_reg_out: unsigned(16 downto 0);
    signal uc_jump_en: std_logic;
+   signal immediate_s: unsigned(6 downto 0);
 begin
 
    pc_inst: pc
@@ -84,6 +86,7 @@ begin
          add_op   => add_op,
          ld_op    => ld_op,
          instruction => instr_reg_out,
+         immediate => immediate_s,
          reg1     => reg_r1
       );
 
@@ -111,6 +114,7 @@ begin
       );
 
    -- problema: logo depois do reset, o pc recebe o valor 1, de forma que a primeira instrucao da rom eh ignorada
+   immediate <= immediate_s;
    pc_wr_en <= '1' when out_sm = "00" else '0';
    instr_reg_wr_en <= '1' when out_sm = "10" else '0';
    current_instr <= instr_reg_out;

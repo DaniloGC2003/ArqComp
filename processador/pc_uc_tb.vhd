@@ -10,6 +10,7 @@ architecture a_pc_uc_tb of pc_uc_tb is
         port(    clk      : in std_logic;
                  rst      : in std_logic;
                  current_instr  : out unsigned(16 downto 0);
+                 immediate    : out unsigned(6 downto 0);
                  add_op      : out std_logic;
                  ld_op       : out std_logic; -- load immediate operation
                  reg_r1      : out unsigned(2 downto 0)
@@ -24,6 +25,7 @@ begin
 		clk => clk,
 		rst => reset,
         current_instr => open,  -- Assuming the output is not used in this testbench
+        immediate => open,
         add_op      => open,
         ld_op       => open,
         reg_r1      => open

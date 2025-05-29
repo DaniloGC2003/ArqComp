@@ -20,16 +20,18 @@ entity uc is
          add_op       : out std_logic;
          ld_op        : out std_logic; -- load immediate operation
          instruction  : in unsigned(16 downto 0);
+         immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(2 downto 0)
    );
 end entity;
 
 architecture a_uc of uc is
    signal opcode: unsigned(3 downto 0);
-   signal immediate: unsigned(6 downto 0);
+   signal immediate_s: unsigned(6 downto 0);
    signal j_en: std_logic;
 begin
-   immediate <= instruction(12 downto 6);
+   immediate_s <= instruction(12 downto 6);
+   immediate <= immediate_s;
    opcode <= instruction(16 downto 13);
    j_en <= '0' when rst = '1' else '1' when opcode = "1111" else '0';
    jump_en <= j_en;
@@ -43,6 +45,6 @@ begin
    -- instruction equal to all zeros means the circuit has just been resetted. Next instruction will be the first one.
    data_out <= (others => '0') when rst = '1' or instruction = "0000000000000000" else
                data_in + 1 when j_en = '0' else 
-               immediate;
+               immediate_s;
    
 end architecture;
