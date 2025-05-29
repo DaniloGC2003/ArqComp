@@ -8,6 +8,7 @@ use ieee.numeric_std.all;
 --    0001 = nop
 --    0010 = add
 --    0011 = load immediate
+--    0100 = subtract
 -- bits [12:6] = immediate
 -- bits [5:3] = reg1
 entity uc is
@@ -19,6 +20,7 @@ entity uc is
          jump_en      : out std_logic;
          add_op       : out std_logic;
          ld_op        : out std_logic; -- load immediate operation
+         subtract_op : out std_logic; -- subtract operation
          instruction  : in unsigned(16 downto 0);
          immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(2 downto 0)
@@ -39,6 +41,8 @@ begin
    add_op <= '1' when opcode = "0010" else '0';
 
    ld_op <= '1' when opcode = "0011" else '0'; -- load immediate operation
+
+   subtract_op <= '1' when opcode = "0100" else '0'; -- subtract operation
 
    reg1 <= instruction(5 downto 3); -- bits [5:3] = reg1
 

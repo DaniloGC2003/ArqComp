@@ -7,10 +7,10 @@ ghdl -e uc
 ghdl -a reg_instruction.vhd
 ghdl -e reg_instruction
 
-ghdl -a pc_uc.vhd
-ghdl -e pc_uc
+::ghdl -a pc_uc.vhd
+::ghdl -e pc_uc
 
-ghdl -a pc_uc_tb.vhd
-ghdl -e pc_uc_tb
+::ghdl -a pc_uc_tb.vhd
+::ghdl -e pc_uc_tb
 
-ghdl -r pc_uc_tb --wave=pc_uc_tb.ghw
+::ghdl -r pc_uc_tb --wave=pc_uc_tb.ghw

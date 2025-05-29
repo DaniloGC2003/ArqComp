@@ -21,7 +21,7 @@ architecture a_ULA of ULA is
     signal or_result: unsigned(15 downto 0);
     begin
         sum_result <= ("0" & in1) + ("0" & in2);
-        sub_result <= ("0" & in1) - ("0" & in2);
+        sub_result <= ("0" & in2) - ("0" & in1);
         and_result <= in1 and in2;
         or_result <= in1 or in2;
         result <= sum_result(15 downto 0) when select_operation = "00" else
@@ -30,10 +30,10 @@ architecture a_ULA of ULA is
                   or_result when select_operation = "11" else
                   (others => '0');
         carry <= sum_result(16) when select_operation = "00" else
-                '1' when select_operation = "01" and in1 < in2 else '0'; -- editar depois.
+                '1' when select_operation = "01" and in2 < in1 else '0'; -- editar depois.
                     -- overflow sum: inputs with same signs and result has different sign
                     -- overflow sub: inputs with different signs and result has different sign from in1
         overflow <= '1' when select_operation = "00" and (in1(15) = in2(15)) and (sum_result(15) /= in1(15)) else 
-                    '1' when select_operation = "01" and (in1(15) /= in2(15)) and (sub_result(15) /= in1(15)) else
+                    '1' when select_operation = "01" and (in2(15) /= in1(15)) and (sub_result(15) /= in2(15)) else
                     '0';
     end architecture;
