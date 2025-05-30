@@ -34,7 +34,7 @@ architecture a_processador of processador is
             subtract_op : out std_logic; -- subtract operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
-            reg1         : out unsigned(2 downto 0)
+            reg1         : out unsigned(3 downto 0)
         );
     end component;
     component rom is
@@ -98,10 +98,11 @@ architecture a_processador of processador is
     signal pc_wr_en: std_logic;
     signal uc_jump_en: std_logic;
     signal immediate_s: unsigned(6 downto 0);
+    signal immediate_extended: unsigned(15 downto 0);
     signal add_op_s: std_logic;
     signal ld_op_s: std_logic; -- load immediate operation
     signal subtract_op_s: std_logic; -- subtract operation
-    signal reg_r1: unsigned(2 downto 0);
+    signal reg_r1: unsigned(3 downto 0);
 
     signal out_ULA: unsigned(15 downto 0);
     signal in_ULA_A: unsigned(15 downto 0);
@@ -114,6 +115,7 @@ architecture a_processador of processador is
     signal data_in_bank: unsigned(15 downto 0);
     signal ULA_op: unsigned(1 downto 0);
     signal accumulator_wr_en: std_logic;
+    signal in_accumulator: unsigned(15 downto 0);
     signal const_register: unsigned(15 downto 0) := "0000000000000010"; -- Example constant register
 begin
     -- PC UC instantiation
@@ -169,7 +171,7 @@ begin
             clk      => clk,
             rst      => rst,
             wr_en    => accumulator_wr_en,
-            data_in  => out_ULA,
+            data_in  => in_accumulator,
             data_out => in_ULA_B
         );
     bank: bank_regs
@@ -193,19 +195,28 @@ begin
         );
 
 
+    immediate_extended <= (B"0_0000_0000" & immediate_s) when immediate_s(6) = '0' else
+                          (B"1_1111_1111" & immediate_s); -- sign extension for 6-bit immediate
+
+    in_accumulator <= out_ULA when ld_op_s = '0' else
+        immediate_extended when ld_op_s = '1' else
+        (others => '0');
+
     -- for LD
-    bank_reg_wr <= reg_r1 when ld_op_s = '1' else (others => '0');
-    data_in_bank <= (B"0_0000_0000" & immediate_s) when ld_op_s = '1' else
+    bank_reg_wr <= reg_r1(2 downto 0) when ld_op_s = '1' and reg_r1(3) = '0' else (others => '0');
+    data_in_bank <= immediate_extended when ld_op_s = '1' else
                       (others => '0');
     bank_wr_en <= '1' when ld_op_s = '1' else '0';
 
     -- for ADD, SUBTARCT
-    bank_reg_r <= reg_r1 when (add_op_s = '1' or subtract_op_s = '1') and out_sm = "01" else
-        (others => '0');
+    bank_reg_r <= reg_r1(2 downto 0) when (add_op_s = '1' or subtract_op_s = '1') and out_sm = "01" and reg_r1(3) = '0' else
+        "111"; -- default value, means no register selected
     ULA_op <= "00" when add_op_s = '1' else
               "01" when subtract_op_s = '1' else
         (others => '0');
-    accumulator_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1') and out_sm = "01" else '0';
+    accumulator_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1') and out_sm = "01" else
+                        '1' when ld_op_s = '1' and reg_r1(3) = '1' else
+                        '0';
 
     -- updating PC
     pc_wr_en <= '1' when out_sm = "00" else '0';
@@ -213,7 +224,6 @@ begin
     -- updating instruction register
     instr_reg_wr_en <= '1' when out_sm = "10" else '0';
 
-    
 
     -- sending signals to top level
     instruction <= instr_reg_out;
