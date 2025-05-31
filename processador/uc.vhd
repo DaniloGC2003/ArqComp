@@ -6,11 +6,16 @@ use ieee.numeric_std.all;
 -- opcodes: 
 --    1111 = jump
 --    0001 = nop
+--    0000 = nop
 --    0010 = add
 --    0011 = load immediate
 --    0100 = subtract
+--    0101 = move
 -- bits [12:6] = immediate
 -- bits [5:2] = reg1
+--
+-- move operation: 0101_xxxxxxx_ARRR_xxx
+-- where RRR = reg1. If A = 0: reg1 <- A. Else: A <- reg1.
 entity uc is
    port( 
          rst      : in std_logic;
@@ -21,6 +26,7 @@ entity uc is
          add_op       : out std_logic;
          ld_op        : out std_logic; -- load immediate operation
          subtract_op : out std_logic; -- subtract operation
+         move_op    : out std_logic; -- move operation
          instruction  : in unsigned(16 downto 0);
          immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(3 downto 0)
@@ -43,6 +49,8 @@ begin
    ld_op <= '1' when opcode = "0011" else '0'; -- load immediate operation
 
    subtract_op <= '1' when opcode = "0100" else '0'; -- subtract operation
+
+   move_op <= '1' when opcode = "0101" else '0'; -- move operation
 
    reg1 <= instruction(5 downto 2); -- bits [5:2] = reg1
 

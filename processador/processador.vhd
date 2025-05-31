@@ -32,6 +32,7 @@ architecture a_processador of processador is
             add_op       : out std_logic;
             ld_op        : out std_logic; -- load immediate operation
             subtract_op : out std_logic; -- subtract operation
+            move_op    : out std_logic; -- move operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(3 downto 0)
@@ -75,7 +76,14 @@ architecture a_processador of processador is
             rst      : in std_logic;
             wr_en    : in std_logic;
             data_in  : in unsigned(15 downto 0);
-            data_out : out unsigned(15 downto 0)
+            data_out : out unsigned(15 downto 0);
+            reg0_out : out unsigned(15 downto 0);
+            reg1_out : out unsigned(15 downto 0);
+            reg2_out : out unsigned(15 downto 0);
+            reg3_out : out unsigned(15 downto 0);
+            reg4_out : out unsigned(15 downto 0);
+            reg5_out : out unsigned(15 downto 0);
+            reg6_out : out unsigned(15 downto 0)
         );
     end component;
     component ULA is
@@ -102,7 +110,16 @@ architecture a_processador of processador is
     signal add_op_s: std_logic;
     signal ld_op_s: std_logic; -- load immediate operation
     signal subtract_op_s: std_logic; -- subtract operation
+    signal move_op_s: std_logic; -- move operation
     signal reg_r1: unsigned(3 downto 0);
+
+    signal reg0_out_s: unsigned(15 downto 0);
+    signal reg1_out_s: unsigned(15 downto 0);
+    signal reg2_out_s: unsigned(15 downto 0);
+    signal reg3_out_s: unsigned(15 downto 0);
+    signal reg4_out_s: unsigned(15 downto 0);
+    signal reg5_out_s: unsigned(15 downto 0);
+    signal reg6_out_s: unsigned(15 downto 0);
 
     signal out_ULA: unsigned(15 downto 0);
     signal in_ULA_A: unsigned(15 downto 0);
@@ -135,7 +152,8 @@ begin
          data_out => out_uc,
          jump_en  => uc_jump_en,
          add_op   => add_op_s,
-        subtract_op => subtract_op_s,
+         subtract_op => subtract_op_s,
+         move_op  => move_op_s,
          ld_op    => ld_op_s,
          instruction => instr_reg_out,
          immediate => immediate_s,
@@ -182,7 +200,14 @@ begin
             rst      => rst,
             wr_en    => bank_wr_en,
             data_in  => data_in_bank,
-            data_out => in_ULA_A
+            data_out => in_ULA_A,
+            reg0_out => reg0_out_s,
+            reg1_out => reg1_out_s,
+            reg2_out => reg2_out_s,
+            reg3_out => reg3_out_s,
+            reg4_out => reg4_out_s,
+            reg5_out => reg5_out_s,
+            reg6_out => reg6_out_s
         );
     ULA_instance: ULA
         port map(
@@ -198,17 +223,29 @@ begin
     immediate_extended <= (B"0_0000_0000" & immediate_s) when immediate_s(6) = '0' else
                           (B"1_1111_1111" & immediate_s); -- sign extension for 6-bit immediate
 
-    in_accumulator <= out_ULA when ld_op_s = '0' else
+    in_accumulator <= 
+        reg0_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "000" else
+        reg1_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "001" else
+        reg2_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "010" else
+        reg3_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "011" else
+        reg4_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "100" else
+        reg5_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "101" else
+        reg6_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "110" else
+        out_ULA when ld_op_s = '0' else
         immediate_extended when ld_op_s = '1' else
         (others => '0');
 
-    -- for LD
-    bank_reg_wr <= reg_r1(2 downto 0) when ld_op_s = '1' and reg_r1(3) = '0' else (others => '0');
+    -- for LD, MOV
+    bank_reg_wr <= reg_r1(2 downto 0) when (ld_op_s = '1' and reg_r1(3) = '0') or
+                (move_op_s = '1' and reg_r1(3) = '0') else
+                (others => '0');
     data_in_bank <= immediate_extended when ld_op_s = '1' else
-                      (others => '0');
-    bank_wr_en <= '1' when ld_op_s = '1' else '0';
+                    in_ULA_B when move_op_s = '1' and reg_r1(3) = '0' else
+                    (others => '0');
+    bank_wr_en <= '1' when ld_op_s = '1' or (move_op_s = '1' and reg_r1(3) = '0') else
+                '0';
 
-    -- for ADD, SUBTARCT
+    -- for ADD, SUBTRACT
     bank_reg_r <= reg_r1(2 downto 0) when (add_op_s = '1' or subtract_op_s = '1') and out_sm = "01" and reg_r1(3) = '0' else
         "111"; -- default value, means no register selected
     ULA_op <= "00" when add_op_s = '1' else
@@ -216,6 +253,7 @@ begin
         (others => '0');
     accumulator_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1') and out_sm = "01" else
                         '1' when ld_op_s = '1' and reg_r1(3) = '1' else
+                        '1' when move_op_s = '1' and reg_r1(3) = '1' else
                         '0';
 
     -- updating PC

@@ -12,17 +12,17 @@ architecture a_rom of rom is
    constant conteudo_rom : mem := (
       -- caso endereco => conteudo
       0  => B"0011_0000110_1000_10", -- ld into accumulator
-      1  => "10000000000000001",
-      2  => B"0011_1000110_1000_10",
-      3  => "10000000000000011",
-      4  => "00000000000000000",
-      5  => "10000000000000101",
+      1  => B"0101_0000000_0101_00", -- Accumulator -> r5
+      2  => B"00000000000000000",
+      3  => B"10000000000000011",
+      4  => B"00000000000000000",
+      5  => B"10000000000000101",
       6  => B"0011_0000001_0001_10", -- ld into r1
       7  => B"0011_0100001_0011_10", -- ld into r3
       8  => B"0010_0000000_0011_00", -- add r3
       9  => B"0100_0000000_0001_00", -- sub r1
-      10 => "10000000000001010", -- A
-      11 => "11110000000001011", -- B. instruction says "jump to 0"
+      10 => B"0101_0000000_1110_10", -- load r6 into Accumulator
+      11 => B"11110000000001011", -- B. instruction says "jump to 0"
       -- abaixo: casos omissos => (zero em todos os bits)
       others => (others=>'0')
    );

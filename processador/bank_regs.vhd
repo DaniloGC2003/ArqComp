@@ -10,7 +10,14 @@ entity bank_regs is
       rst      : in std_logic;
       wr_en    : in std_logic;
       data_in  : in unsigned(15 downto 0);
-      data_out : out unsigned(15 downto 0)
+      data_out : out unsigned(15 downto 0);
+      reg0_out : out unsigned(15 downto 0);
+      reg1_out : out unsigned(15 downto 0);
+      reg2_out : out unsigned(15 downto 0);  
+      reg3_out : out unsigned(15 downto 0);
+      reg4_out : out unsigned(15 downto 0);
+      reg5_out : out unsigned(15 downto 0);
+      reg6_out : out unsigned(15 downto 0)
    );
 end entity;
 
@@ -106,6 +113,15 @@ begin
          data_in  => data_in,
          data_out => data_out_6
       );
+      
+   reg0_out <= data_out_0;
+   reg1_out <= data_out_1;
+   reg2_out <= data_out_2;
+   reg3_out <= data_out_3;
+   reg4_out <= data_out_4;
+   reg5_out <= data_out_5;
+   reg6_out <= data_out_6;
+
    --uso de process: nao recomendado
    data_out <= data_out_0 when (reg_r = "000") else
                data_out_1 when (reg_r = "001") else
