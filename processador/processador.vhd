@@ -132,8 +132,8 @@ architecture a_processador of processador is
     signal reg6_out_s: unsigned(15 downto 0);
 
     signal out_ULA: unsigned(15 downto 0);
-    signal in_ULA_A: unsigned(15 downto 0);
-    signal in_ULA_B: unsigned(15 downto 0);
+    signal in_ULA_A: unsigned(15 downto 0) := (others => '0'); -- default value
+    signal in_ULA_B: unsigned(15 downto 0) := (others => '0'); -- default value
 
     signal current_instr: unsigned(16 downto 0);
     signal bank_reg_r: unsigned(2 downto 0);
@@ -147,7 +147,7 @@ architecture a_processador of processador is
     signal out_accumulator: unsigned(15 downto 0);
 
     signal zero_s: std_logic; -- zero flag for ULA
-    
+
     signal const_register: unsigned(15 downto 0) := "0000000000000010"; -- Example constant register
 begin
     -- PC UC instantiation
@@ -256,13 +256,15 @@ begin
         immediate_extended when ld_op_s = '1' else
         (others => '0');
 
-    in_ULA_A <= immediate_extended when subi_op_s = '1' else
-                out_accumulator when cmpi_op_s = '1' and reg_r1(3) = '1' else
-                data_out_bank;
+    in_ULA_A <= immediate_extended when subi_op_s = '1' else -- SUBI
+                out_accumulator when cmpi_op_s = '1' and reg_r1(3) = '1' else -- CMPI with accumulator
+                data_out_bank when add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or (cmpi_op_s = '1' and reg_r1(3) = '0') else -- ADD, SUBTRACT, ADDI, CMPI
+                in_ULA_A;
 
-    in_ULA_B <= immediate_extended when addi_op_s = '1' or cmpi_op_s = '1' else
-                data_out_bank when subi_op_s = '1' else
-                out_accumulator;
+    in_ULA_B <= immediate_extended when addi_op_s = '1' or cmpi_op_s = '1' else -- ADDI, CMPI
+                data_out_bank when subi_op_s = '1' else -- SUBI
+                out_accumulator when add_op_s = '1' or subtract_op_s = '1' else -- ADD, SUBTRACT
+                in_ULA_B;
 
     -- for LD, MOV, ADDI, SUBI
     bank_reg_wr <= reg_r1(2 downto 0) when (ld_op_s = '1' and reg_r1(3) = '0') or
@@ -271,7 +273,7 @@ begin
                 (clr_op_s = '1' and reg_r1(3) = '0') else
                 (others => '0');
     data_in_bank <= immediate_extended when ld_op_s = '1' else
-                    in_ULA_B when move_op_s = '1' and reg_r1(3) = '0' else
+                    out_accumulator when move_op_s = '1' and reg_r1(3) = '0' else
                     out_ULA when addi_op_s = '1' or subi_op_s = '1' else
                     (others => '0');
     bank_wr_en <= '1' when ld_op_s = '1' or (move_op_s = '1' and reg_r1(3) = '0') or (addi_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") or
@@ -279,7 +281,9 @@ begin
                 '0';
 
     -- for ADD, SUBTRACT, ADDI, SUBI
-    bank_reg_r <= reg_r1(2 downto 0) when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1') and out_sm = "01" and reg_r1(3) = '0' else
+    -- maybe change here? if this doesn't work, maybe "freeza" the ALU inputs during each instruction cycle
+    bank_reg_r <= reg_r1(2 downto 0) when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1') --and out_sm = "01" 
+    and reg_r1(3) = '0' else
         "111"; -- default value, means no register selected
     ULA_op <= "00" when add_op_s = '1' or addi_op_s = '1' else
             "01" when subtract_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1' else

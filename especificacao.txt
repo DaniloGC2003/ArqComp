@@ -1,0 +1,23 @@
+Olá Danilo,
+
+Seguem as características sorteadas para o processador da sua equipe. Explicações mais detalhadas sobre os itens se encontram no Moodle, num PDF na seção de Laboratório e Projeto.
+
+Instruções OBRIGATÓRIAS a serem usadas na sua validação:
+{'Acumulador ou não': 'ULA com acumulador',
+ 'Largura da ROM / instrução em bits': [17],
+ 'Número de registradores no banco': [7],
+ 'ADD ops': 'ADD com dois operandos apenas',
+ 'Carga de constantes': 'Carrega diretamente com LD sem somar',
+ 'SUB ops': 'Subtração com dois operandos apenas',
+ 'ADD ctes': 'Há instrução ADDI que soma com constante',
+ 'SUB ctes': 'Há instrução que subtrai uma constante',
+ 'Subtração': 'Subtração com SUB sem borrow',
+ 'Comparações': 'Comparação apenas com CMPI',
+ 'Saltos condicionais': ['BEQ', 'BVS'],
+ 'Saltos': 'Incondicional é absoluto e condicional é relativo',
+ 'Validação -- final do loop': 'Loop com DJNZ',
+ 'Validação -- complicações': 'Primos < 1024'}
+
+Vamos conversando ao longo do semestre,
+
+Juliano

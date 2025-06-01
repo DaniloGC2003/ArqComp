@@ -7,10 +7,10 @@ use ieee.numeric_std.all;
 --    1111 = jump
 --    0001 = nop
 --    0000 = nop
---    0010 = add
+--    0010 = add. A <- A + reg1
 --    0011 = load immediate. Reg1 <- immediate
---    0100 = subtract
---    0101 = move
+--    0100 = subtract. A <- A - reg1
+--    0101 = move. 0101_xxxxxxx_ARRR_xxx. If A = 0: reg1 <- A. Else: A <- reg1.
 --    0110 = addi. 0110_IIIIIII_0RRR_xxx. I = immediate, RRR = reg1. reg1 += I.
 --    0111 = subi. 0111_IIIIIII_0RRR_xxx. I = immediate, RRR = reg1. reg1 -= I.
 --    1000 = clear. 1000_xxxxxxx_ARRR_xxx
