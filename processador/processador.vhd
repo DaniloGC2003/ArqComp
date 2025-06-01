@@ -33,6 +33,8 @@ architecture a_processador of processador is
             ld_op        : out std_logic; -- load immediate operation
             subtract_op : out std_logic; -- subtract operation
             move_op    : out std_logic; -- move operation
+            addi_op   : out std_logic; -- add immediate operation
+            subi_op   : out std_logic; -- subtract immediate operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(3 downto 0)
@@ -111,6 +113,8 @@ architecture a_processador of processador is
     signal ld_op_s: std_logic; -- load immediate operation
     signal subtract_op_s: std_logic; -- subtract operation
     signal move_op_s: std_logic; -- move operation
+    signal addi_op_s: std_logic; -- add immediate operation
+    signal subi_op_s: std_logic; -- subtract immediate operation
     signal reg_r1: unsigned(3 downto 0);
 
     signal reg0_out_s: unsigned(15 downto 0);
@@ -130,9 +134,11 @@ architecture a_processador of processador is
     signal bank_reg_wr: unsigned(2 downto 0);
     signal bank_wr_en: std_logic;
     signal data_in_bank: unsigned(15 downto 0);
+    signal data_out_bank: unsigned(15 downto 0);
     signal ULA_op: unsigned(1 downto 0);
     signal accumulator_wr_en: std_logic;
     signal in_accumulator: unsigned(15 downto 0);
+    signal out_accumulator: unsigned(15 downto 0);
     signal const_register: unsigned(15 downto 0) := "0000000000000010"; -- Example constant register
 begin
     -- PC UC instantiation
@@ -155,6 +161,8 @@ begin
          subtract_op => subtract_op_s,
          move_op  => move_op_s,
          ld_op    => ld_op_s,
+         addi_op  => addi_op_s,
+         subi_op  => subi_op_s,
          instruction => instr_reg_out,
          immediate => immediate_s,
          reg1     => reg_r1
@@ -190,7 +198,7 @@ begin
             rst      => rst,
             wr_en    => accumulator_wr_en,
             data_in  => in_accumulator,
-            data_out => in_ULA_B
+            data_out => out_accumulator
         );
     bank: bank_regs
         port map(
@@ -200,7 +208,7 @@ begin
             rst      => rst,
             wr_en    => bank_wr_en,
             data_in  => data_in_bank,
-            data_out => in_ULA_A,
+            data_out => data_out_bank,
             reg0_out => reg0_out_s,
             reg1_out => reg1_out_s,
             reg2_out => reg2_out_s,
@@ -235,22 +243,32 @@ begin
         immediate_extended when ld_op_s = '1' else
         (others => '0');
 
-    -- for LD, MOV
+    in_ULA_A <= immediate_extended when subi_op_s = '1' else
+                data_out_bank;
+
+    in_ULA_B <= immediate_extended when addi_op_s = '1' else
+                data_out_bank when subi_op_s = '1' else
+                out_accumulator;
+
+    -- for LD, MOV, ADDI, SUBI
     bank_reg_wr <= reg_r1(2 downto 0) when (ld_op_s = '1' and reg_r1(3) = '0') or
-                (move_op_s = '1' and reg_r1(3) = '0') else
+                (move_op_s = '1' and reg_r1(3) = '0') or (addi_op_s = '1' and reg_r1(3) = '0') or
+                (subi_op_s = '1' and reg_r1(3) = '0') else
                 (others => '0');
     data_in_bank <= immediate_extended when ld_op_s = '1' else
                     in_ULA_B when move_op_s = '1' and reg_r1(3) = '0' else
+                    out_ULA when addi_op_s = '1' or subi_op_s = '1' else
                     (others => '0');
-    bank_wr_en <= '1' when ld_op_s = '1' or (move_op_s = '1' and reg_r1(3) = '0') else
+    bank_wr_en <= '1' when ld_op_s = '1' or (move_op_s = '1' and reg_r1(3) = '0') or (addi_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") or
+                (subi_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") else
                 '0';
 
-    -- for ADD, SUBTRACT
-    bank_reg_r <= reg_r1(2 downto 0) when (add_op_s = '1' or subtract_op_s = '1') and out_sm = "01" and reg_r1(3) = '0' else
+    -- for ADD, SUBTRACT, ADDI, SUBI
+    bank_reg_r <= reg_r1(2 downto 0) when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1') and out_sm = "01" and reg_r1(3) = '0' else
         "111"; -- default value, means no register selected
-    ULA_op <= "00" when add_op_s = '1' else
-              "01" when subtract_op_s = '1' else
-        (others => '0');
+    ULA_op <= "00" when add_op_s = '1' or addi_op_s = '1' else
+            "01" when subtract_op_s = '1' or subi_op_s = '1' else
+            (others => '0');
     accumulator_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1') and out_sm = "01" else
                         '1' when ld_op_s = '1' and reg_r1(3) = '1' else
                         '1' when move_op_s = '1' and reg_r1(3) = '1' else
