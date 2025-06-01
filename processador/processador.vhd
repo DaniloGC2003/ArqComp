@@ -37,6 +37,7 @@ architecture a_processador of processador is
             addi_op   : out std_logic; -- add immediate operation
             subi_op   : out std_logic; -- subtract immediate operation
             clr_op   : out std_logic; -- clear operation
+            cmpi_op   : out std_logic; -- compare immediate operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(3 downto 0)
@@ -97,7 +98,8 @@ architecture a_processador of processador is
             select_operation : in unsigned(1 downto 0);
             result : out unsigned(15 downto 0);
             carry : out std_logic;
-            overflow : out std_logic
+            overflow : out std_logic;
+            zero : out std_logic
         );
     end component;
     
@@ -118,6 +120,7 @@ architecture a_processador of processador is
     signal addi_op_s: std_logic; -- add immediate operation
     signal subi_op_s: std_logic; -- subtract immediate operation
     signal clr_op_s: std_logic; -- clear operation
+    signal cmpi_op_s: std_logic; -- compare immediate operation
     signal reg_r1: unsigned(3 downto 0);
 
     signal reg0_out_s: unsigned(15 downto 0);
@@ -142,6 +145,9 @@ architecture a_processador of processador is
     signal accumulator_wr_en: std_logic;
     signal in_accumulator: unsigned(15 downto 0);
     signal out_accumulator: unsigned(15 downto 0);
+
+    signal zero_s: std_logic; -- zero flag for ULA
+    
     signal const_register: unsigned(15 downto 0) := "0000000000000010"; -- Example constant register
 begin
     -- PC UC instantiation
@@ -167,6 +173,7 @@ begin
          addi_op  => addi_op_s,
          subi_op  => subi_op_s,
          clr_op   => clr_op_s,
+         cmpi_op  => cmpi_op_s,
          instruction => instr_reg_out,
          immediate => immediate_s,
          reg1     => reg_r1
@@ -228,7 +235,8 @@ begin
             select_operation => ULA_op,
             result => out_ULA,
             carry => open,
-            overflow => open
+            overflow => open,
+            zero => zero_s
         );
 
 
@@ -249,9 +257,10 @@ begin
         (others => '0');
 
     in_ULA_A <= immediate_extended when subi_op_s = '1' else
+                out_accumulator when cmpi_op_s = '1' and reg_r1(3) = '1' else
                 data_out_bank;
 
-    in_ULA_B <= immediate_extended when addi_op_s = '1' else
+    in_ULA_B <= immediate_extended when addi_op_s = '1' or cmpi_op_s = '1' else
                 data_out_bank when subi_op_s = '1' else
                 out_accumulator;
 
@@ -270,10 +279,10 @@ begin
                 '0';
 
     -- for ADD, SUBTRACT, ADDI, SUBI
-    bank_reg_r <= reg_r1(2 downto 0) when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1') and out_sm = "01" and reg_r1(3) = '0' else
+    bank_reg_r <= reg_r1(2 downto 0) when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1') and out_sm = "01" and reg_r1(3) = '0' else
         "111"; -- default value, means no register selected
     ULA_op <= "00" when add_op_s = '1' or addi_op_s = '1' else
-            "01" when subtract_op_s = '1' or subi_op_s = '1' else
+            "01" when subtract_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1' else
             (others => '0');
     accumulator_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1') and out_sm = "01" else
                         '1' when ld_op_s = '1' and reg_r1(3) = '1' else

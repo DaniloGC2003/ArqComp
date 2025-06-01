@@ -14,6 +14,7 @@ use ieee.numeric_std.all;
 --    0110 = addi. 0110_IIIIIII_0RRR_xxx. I = immediate, RRR = reg1. reg1 += I.
 --    0111 = subi. 0111_IIIIIII_0RRR_xxx. I = immediate, RRR = reg1. reg1 -= I.
 --    1000 = clear. 1000_xxxxxxx_ARRR_xxx
+--    1001 = CMPI. 1001_IIIIIII_ARRR_xxx. NOTE: MAKE IT SO THAT THE ALU ONLY UPDATES WHEN IT NEEDS TO EXECUTE AN OPRATIAON
 -- bits [12:6] = immediate
 -- bits [5:2] = reg1
 --
@@ -33,6 +34,7 @@ entity uc is
          addi_op   : out std_logic; -- add immediate operation
          subi_op   : out std_logic; -- subtract immediate operation
          clr_op   : out std_logic; -- clear operation
+         cmpi_op   : out std_logic; -- compare immediate operation
          instruction  : in unsigned(16 downto 0);
          immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(3 downto 0)
@@ -63,6 +65,8 @@ begin
    subi_op <= '1' when opcode = "0111" else '0'; -- subtract immediate operation
 
    clr_op <= '1' when opcode = "1000" else '0'; -- clear operation
+
+   cmpi_op <= '1' when opcode = "1001" else '0'; -- compare immediate operation
 
    reg1 <= instruction(5 downto 2); -- bits [5:2] = reg1
 

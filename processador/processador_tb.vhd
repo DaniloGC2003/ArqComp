@@ -14,7 +14,8 @@ architecture a_processador_tb of processador_tb is
             pc_out       : out unsigned(6 downto 0);
             instruction : out unsigned(16 downto 0);
             bank_reg_out : out unsigned(15 downto 0);
-            accumulator_out : out unsigned(15 downto 0)
+            accumulator_out : out unsigned(15 downto 0);
+            ULA_out : out unsigned(15 downto 0)
         );
     end component;
 
@@ -26,6 +27,7 @@ architecture a_processador_tb of processador_tb is
     signal   instruction : unsigned(16 downto 0);
     signal   bank_reg_out: unsigned(15 downto 0);
     signal   accumulator_out: unsigned(15 downto 0);
+    signal   ULA_out: unsigned(15 downto 0);
 
 begin
 	uut: processador port map (
@@ -35,7 +37,8 @@ begin
         pc_out => pc_out,
         instruction => instruction,
         bank_reg_out => bank_reg_out,
-        accumulator_out => accumulator_out
+        accumulator_out => accumulator_out,
+        ULA_out => ULA_out
 	);
 
 	reset_global: process
