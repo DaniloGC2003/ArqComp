@@ -9,7 +9,8 @@ entity processador is
          pc_out      : out unsigned(6 downto 0);
          instruction : out unsigned(16 downto 0);
          bank_reg_out : out unsigned(15 downto 0);
-         accumulator_out : out unsigned(15 downto 0)
+         accumulator_out : out unsigned(15 downto 0);
+         ULA_out : out unsigned(15 downto 0)
    );
 end entity;
 
@@ -35,6 +36,7 @@ architecture a_processador of processador is
             move_op    : out std_logic; -- move operation
             addi_op   : out std_logic; -- add immediate operation
             subi_op   : out std_logic; -- subtract immediate operation
+            clr_op   : out std_logic; -- clear operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(3 downto 0)
@@ -115,6 +117,7 @@ architecture a_processador of processador is
     signal move_op_s: std_logic; -- move operation
     signal addi_op_s: std_logic; -- add immediate operation
     signal subi_op_s: std_logic; -- subtract immediate operation
+    signal clr_op_s: std_logic; -- clear operation
     signal reg_r1: unsigned(3 downto 0);
 
     signal reg0_out_s: unsigned(15 downto 0);
@@ -163,6 +166,7 @@ begin
          ld_op    => ld_op_s,
          addi_op  => addi_op_s,
          subi_op  => subi_op_s,
+         clr_op   => clr_op_s,
          instruction => instr_reg_out,
          immediate => immediate_s,
          reg1     => reg_r1
@@ -232,6 +236,7 @@ begin
                           (B"1_1111_1111" & immediate_s); -- sign extension for 6-bit immediate
 
     in_accumulator <= 
+        (others => '0') when clr_op_s = '1' and reg_r1(3) = '1' else
         reg0_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "000" else
         reg1_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "001" else
         reg2_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "010" else
@@ -253,14 +258,15 @@ begin
     -- for LD, MOV, ADDI, SUBI
     bank_reg_wr <= reg_r1(2 downto 0) when (ld_op_s = '1' and reg_r1(3) = '0') or
                 (move_op_s = '1' and reg_r1(3) = '0') or (addi_op_s = '1' and reg_r1(3) = '0') or
-                (subi_op_s = '1' and reg_r1(3) = '0') else
+                (subi_op_s = '1' and reg_r1(3) = '0') or
+                (clr_op_s = '1' and reg_r1(3) = '0') else
                 (others => '0');
     data_in_bank <= immediate_extended when ld_op_s = '1' else
                     in_ULA_B when move_op_s = '1' and reg_r1(3) = '0' else
                     out_ULA when addi_op_s = '1' or subi_op_s = '1' else
                     (others => '0');
     bank_wr_en <= '1' when ld_op_s = '1' or (move_op_s = '1' and reg_r1(3) = '0') or (addi_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") or
-                (subi_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") else
+                (subi_op_s = '1' and reg_r1(3) = '0' and out_sm = "01")  or (clr_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") else
                 '0';
 
     -- for ADD, SUBTRACT, ADDI, SUBI
@@ -272,6 +278,7 @@ begin
     accumulator_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1') and out_sm = "01" else
                         '1' when ld_op_s = '1' and reg_r1(3) = '1' else
                         '1' when move_op_s = '1' and reg_r1(3) = '1' else
+                        '1' when clr_op_s = '1' and reg_r1(3) = '1' else
                         '0';
 
     -- updating PC
@@ -285,5 +292,8 @@ begin
     instruction <= instr_reg_out;
     pc_out <= out_pc;
     state <= out_sm;
-    
+    bank_reg_out <= data_out_bank;
+    accumulator_out <= out_accumulator;
+    ULA_out <= out_ULA;
+
     end architecture;

@@ -32,6 +32,7 @@ entity uc is
          move_op    : out std_logic; -- move operation
          addi_op   : out std_logic; -- add immediate operation
          subi_op   : out std_logic; -- subtract immediate operation
+         clr_op   : out std_logic; -- clear operation
          instruction  : in unsigned(16 downto 0);
          immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(3 downto 0)
@@ -60,6 +61,8 @@ begin
    addi_op <= '1' when opcode = "0110" else '0'; -- add immediate operation
    
    subi_op <= '1' when opcode = "0111" else '0'; -- subtract immediate operation
+
+   clr_op <= '1' when opcode = "1000" else '0'; -- clear operation
 
    reg1 <= instruction(5 downto 2); -- bits [5:2] = reg1
 
