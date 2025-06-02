@@ -4,11 +4,11 @@ use ieee.numeric_std.all;
 
 -- bits [16:13] = opcode
 -- opcodes: 
---    1111 = jump
+--    1111 = jump. 1111_JJJJJJJ_xxxx_xxx.
 --    0001 = nop
 --    0000 = nop
---    0010 = add. A <- A + reg1
---    0011 = load immediate. Reg1 <- immediate
+--    0010 = add.  0010_xxxxxxx_xRRR_xxx. A <- A + reg1
+--    0011 = load immediate. Reg1 <- immediate. 0011_xxxxxxx_ARRR_xxx. A = 1, load into accumulator
 --    0100 = subtract. A <- A - reg1
 --    0101 = move. 0101_xxxxxxx_ARRR_xxx. If A = 0: reg1 <- A. Else: A <- reg1.
 --    0110 = addi. 0110_IIIIIII_0RRR_xxx. I = immediate, RRR = reg1. reg1 += I.

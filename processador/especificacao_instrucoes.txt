@@ -1,0 +1,48 @@
+Para as representações em bits dos comandos: 
+    "x" representa um valor indiferente.
+    "A" representa o bit de operação de acumulador. Sua função varia de acordo com a instrução
+    "RRR" representa o endereço de REG no banco de registradores.
+    "IIIIIII" representa o valor imediato
+    REG pode representar r0,r1,r2,r3,r4,r5,r6
+
+Os opcodes das instruções implementadas são:
+
+1111 = jump ADDR. 
+    Salto absoluto
+    1111_JJJJJJJ_xxxx_xxx
+    JJJJJJJ representa o endereço absoluto do salto
+
+0010 = add A,REG. 
+    operação de adição. Resultado armazenado no acumulador
+    0010_xxxxxxx_xRRR_xxx. 
+
+0011 = LD REG,IMM ou LD A,IMM
+    0011_IIIIIII_ARRR_xxx
+    Caso A = 0, o imediato será carregado no registrador no endereço RRR. Caso A = 1, o imediato será carregado no acumulador
+
+0100 = SUB A,REG. 
+    Operação de subtração. Resultado A - REG armazenado no acumulador.
+    0100_xxxxxxx_xRRR_xxx. 
+
+0101 = MOV A,REG ou MOV REG,A
+    0101_xxxxxxx_ARRR_xxx
+    Se A = 0: reg1 <- A. Se A = 1, A <- reg1.
+
+0110 = ADDI REG,IMM.
+    REG <- REG + IMM
+    0110_IIIIIII_0RRR_xxx
+
+0111 = SUBI REG,IMM
+    REG <- REG - IMM
+    0111_IIIIIII_0RRR_xxx
+
+1000 = CLR REG ou CLR A
+    1000_xxxxxxx_ARRR_xxx
+    Se A = 0, CLR REG; Se A = 1, CLR A
+
+1001 = CMPI IMM,REG ou CMPI IMM,A
+    1001_IIIIIII_ARRR_xxx
+    Se A = 0, CMPI IMM,REG; Se A = 1, CMPI IMM,A
+    
+0000 e quaisquer outros opcodes que não foram mencionados = nop
+    0000_xxxxxxx_xxxx_xxx
