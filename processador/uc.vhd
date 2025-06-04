@@ -38,7 +38,8 @@ entity uc is
          beq_op   : out std_logic; -- branch if equal operation
          instruction  : in unsigned(16 downto 0);
          immediate    : out unsigned(6 downto 0);
-         reg1         : out unsigned(3 downto 0)
+         reg1         : out unsigned(3 downto 0);
+         zero_flag    : in std_logic
    );
 end entity;
 
@@ -46,6 +47,7 @@ architecture a_uc of uc is
    signal opcode: unsigned(3 downto 0);
    signal immediate_s: unsigned(6 downto 0);
    signal j_en: std_logic;
+   signal beq_op_s: std_logic;
 begin
    immediate_s <= instruction(12 downto 6);
    immediate <= immediate_s;
@@ -69,13 +71,15 @@ begin
 
    cmpi_op <= '1' when opcode = "1001" else '0'; -- compare immediate operation
 
-   beq_op <= '1' when opcode = "1010" else '0'; -- branch if equal operation
+   beq_op_s <= '1' when opcode = "1010" else '0'; -- branch if equal operation
+   beq_op <= beq_op_s;
 
    reg1 <= instruction(5 downto 2); -- bits [5:2] = reg1
 
    -- instruction equal to all zeros means the circuit has just been resetted. Next instruction will be the first one.
    data_out <= --(others => '0') when rst = '1' or instruction = "0000000000000000" else
+               data_in when beq_op_s = '1' and zero_flag = '1' else
                data_in + 1 when j_en = '0' else 
-               immediate_s;
+               immediate_s; -- when j_en = '1'
    
 end architecture;

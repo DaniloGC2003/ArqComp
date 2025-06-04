@@ -41,7 +41,8 @@ architecture a_processador of processador is
             beq_op   : out std_logic; -- branch if equal operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
-            reg1         : out unsigned(3 downto 0)
+            reg1         : out unsigned(3 downto 0);
+            zero_flag    : in std_logic
         );
     end component;
     component rom is
@@ -190,7 +191,8 @@ begin
          beq_op   => beq_op_s,
          instruction => instr_reg_out,
          immediate => immediate_s,
-         reg1     => reg_r1
+         reg1     => reg_r1,
+         zero_flag => reg1bit_zero_out
       );
 
     rom_inst: rom
@@ -318,7 +320,7 @@ begin
                         '0';
 
     -- updating PC
-    pc_wr_en <= '1' when out_sm = "01" else '0';
+    pc_wr_en <= '1' when out_sm = "00" else '0';--HERE IT WAS 00
 
     -- updating instruction register
     instr_reg_wr_en <= '1' when out_sm = "10" else '0';
