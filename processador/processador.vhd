@@ -38,6 +38,7 @@ architecture a_processador of processador is
             subi_op   : out std_logic; -- subtract immediate operation
             clr_op   : out std_logic; -- clear operation
             cmpi_op   : out std_logic; -- compare immediate operation
+            beq_op   : out std_logic; -- branch if equal operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(3 downto 0)
@@ -102,9 +103,18 @@ architecture a_processador of processador is
             zero : out std_logic
         );
     end component;
+    component reg1bit is
+        port( clk      : in std_logic;
+              rst      : in std_logic;
+              wr_en    : in std_logic;
+              data_in  : in std_logic;
+              data_out : out std_logic
+        );
+    end component;
     
     signal out_pc: unsigned(6 downto 0);
     signal out_uc: unsigned(6 downto 0);
+    signal in_uc: unsigned(6 downto 0);
     signal out_rom: unsigned(16 downto 0);
     signal out_sm: unsigned(1 downto 0);
     signal instr_reg_wr_en: std_logic;
@@ -121,6 +131,7 @@ architecture a_processador of processador is
     signal subi_op_s: std_logic; -- subtract immediate operation
     signal clr_op_s: std_logic; -- clear operation
     signal cmpi_op_s: std_logic; -- compare immediate operation
+    signal beq_op_s: std_logic; -- branch if equal operation
     signal reg_r1: unsigned(3 downto 0);
 
     signal reg0_out_s: unsigned(15 downto 0);
@@ -147,6 +158,8 @@ architecture a_processador of processador is
     signal out_accumulator: unsigned(15 downto 0);
 
     signal zero_s: std_logic; -- zero flag for ULA
+    signal reg1bit_zero_wr_en: std_logic;
+    signal reg1bit_zero_out: std_logic;
 
     signal const_register: unsigned(15 downto 0) := "0000000000000010"; -- Example constant register
 begin
@@ -163,7 +176,7 @@ begin
     uc_inst: uc
       port map(
          rst      => rst,
-         data_in  => out_pc,
+         data_in  => in_uc,
          data_out => out_uc,
          jump_en  => uc_jump_en,
          add_op   => add_op_s,
@@ -174,6 +187,7 @@ begin
          subi_op  => subi_op_s,
          clr_op   => clr_op_s,
          cmpi_op  => cmpi_op_s,
+         beq_op   => beq_op_s,
          instruction => instr_reg_out,
          immediate => immediate_s,
          reg1     => reg_r1
@@ -238,6 +252,14 @@ begin
             overflow => open,
             zero => zero_s
         );
+    reg1bit_zero: reg1bit
+        port map(
+            clk      => clk,
+            rst      => rst,
+            wr_en    => reg1bit_zero_wr_en,
+            data_in  => zero_s,
+            data_out => reg1bit_zero_out
+        );
 
 
     immediate_extended <= (B"0_0000_0000" & immediate_s) when immediate_s(6) = '0' else
@@ -259,11 +281,12 @@ begin
     in_ULA_A <= immediate_extended when subi_op_s = '1' else -- SUBI
                 out_accumulator when cmpi_op_s = '1' and reg_r1(3) = '1' else -- CMPI with accumulator
                 data_out_bank when add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or (cmpi_op_s = '1' and reg_r1(3) = '0') else -- ADD, SUBTRACT, ADDI, CMPI
+                "000000000" & out_pc when beq_op_s = '1' else -- BEQ
                 in_ULA_A;
 
-    in_ULA_B <= immediate_extended when addi_op_s = '1' or cmpi_op_s = '1' else -- ADDI, CMPI
+    in_ULA_B <= immediate_extended when addi_op_s = '1' or cmpi_op_s = '1' or beq_op_s = '1' else -- ADDI, CMPI, BEQ
                 data_out_bank when subi_op_s = '1' else -- SUBI
-                out_accumulator when add_op_s = '1' or subtract_op_s = '1' else -- ADD, SUBTRACT
+                out_accumulator when (add_op_s = '1' or subtract_op_s = '1') else -- and out_sm = "00" else -- ADD, SUBTRACT
                 in_ULA_B;
 
     -- for LD, MOV, ADDI, SUBI
@@ -295,11 +318,17 @@ begin
                         '0';
 
     -- updating PC
-    pc_wr_en <= '1' when out_sm = "00" else '0';
+    pc_wr_en <= '1' when out_sm = "01" else '0';
 
     -- updating instruction register
     instr_reg_wr_en <= '1' when out_sm = "10" else '0';
 
+    -- sending address to UC
+    in_uc <= out_ULA(6 downto 0) when beq_op_s = '1' and reg1bit_zero_out = '1' else
+              out_pc;
+
+    reg1bit_zero_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1') and out_sm = "01" else
+                            '0';
 
     -- sending signals to top level
     instruction <= instr_reg_out;

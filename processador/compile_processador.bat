@@ -1,3 +1,6 @@
+ghdl -a reg1bit.vhd
+ghdl -e reg1bit
+
 ghdl -a processador.vhd
 ghdl -e processador
 

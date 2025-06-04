@@ -15,6 +15,7 @@ use ieee.numeric_std.all;
 --    0111 = subi. 0111_IIIIIII_0RRR_xxx. I = immediate, RRR = reg1. reg1 -= I.
 --    1000 = clear. 1000_xxxxxxx_ARRR_xxx
 --    1001 = CMPI. 1001_IIIIIII_ARRR_xxx. NOTE: MAKE IT SO THAT THE ALU ONLY UPDATES WHEN IT NEEDS TO EXECUTE AN OPRATIAON
+--    1010 = BEQ. 1010_IIIIIII_xxxx_xxx. If zero_flag = 1, jump according to immediate.
 -- bits [12:6] = immediate
 -- bits [5:2] = reg1
 --
@@ -25,7 +26,6 @@ entity uc is
          rst      : in std_logic;
          data_in  : in unsigned(6 downto 0);
          data_out : out unsigned(6 downto 0); -- data used to update PC
-
          jump_en      : out std_logic;
          add_op       : out std_logic;
          ld_op        : out std_logic; -- load immediate operation
@@ -35,6 +35,7 @@ entity uc is
          subi_op   : out std_logic; -- subtract immediate operation
          clr_op   : out std_logic; -- clear operation
          cmpi_op   : out std_logic; -- compare immediate operation
+         beq_op   : out std_logic; -- branch if equal operation
          instruction  : in unsigned(16 downto 0);
          immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(3 downto 0)
@@ -67,6 +68,8 @@ begin
    clr_op <= '1' when opcode = "1000" else '0'; -- clear operation
 
    cmpi_op <= '1' when opcode = "1001" else '0'; -- compare immediate operation
+
+   beq_op <= '1' when opcode = "1010" else '0'; -- branch if equal operation
 
    reg1 <= instruction(5 downto 2); -- bits [5:2] = reg1
 
