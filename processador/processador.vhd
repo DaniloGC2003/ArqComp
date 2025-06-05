@@ -276,33 +276,34 @@ begin
         reg4_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "100" else
         reg5_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "101" else
         reg6_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "110" else
-        out_ULA when ld_op_s = '0' else
+        out_ULA when ld_op_s = '0' or addi_op_s = '1' or subi_op_s = '1' else
         immediate_extended when ld_op_s = '1' else
         (others => '0');
 
-    in_ULA_A <= immediate_extended when subi_op_s = '1' else -- SUBI
+    in_ULA_A <= immediate_extended when subi_op_s = '1' or addi_op_s = '1' else -- SUBI, ADDI
                 out_accumulator when cmpi_op_s = '1' and reg_r1(3) = '1' else -- CMPI with accumulator
-                data_out_bank when add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or (cmpi_op_s = '1' and reg_r1(3) = '0') else -- ADD, SUBTRACT, ADDI, CMPI
+                data_out_bank when add_op_s = '1' or subtract_op_s = '1' or (cmpi_op_s = '1' and reg_r1(3) = '0') else -- ADD, SUBTRACT, CMPI
                 "000000000" & out_pc when beq_op_s = '1' else -- BEQ
                 in_ULA_A;
 
-    in_ULA_B <= immediate_extended when addi_op_s = '1' or cmpi_op_s = '1' or beq_op_s = '1' else -- ADDI, CMPI, BEQ
-                data_out_bank when subi_op_s = '1' else -- SUBI
-                out_accumulator when (add_op_s = '1' or subtract_op_s = '1') else -- and out_sm = "00" else -- ADD, SUBTRACT
+    in_ULA_B <= immediate_extended when cmpi_op_s = '1' or beq_op_s = '1' else -- CMPI, BEQ
+                out_accumulator when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1') else -- and out_sm = "00" else -- ADD, SUBTRACT, ADDI, SUBI
                 in_ULA_B;
 
     -- for LD, MOV, ADDI, SUBI
     bank_reg_wr <= reg_r1(2 downto 0) when (ld_op_s = '1' and reg_r1(3) = '0') or
-                (move_op_s = '1' and reg_r1(3) = '0') or (addi_op_s = '1' and reg_r1(3) = '0') or
-                (subi_op_s = '1' and reg_r1(3) = '0') or
+                (move_op_s = '1' and reg_r1(3) = '0') or --(addi_op_s = '1' and reg_r1(3) = '0') or
+                --(subi_op_s = '1' and reg_r1(3) = '0') or
                 (clr_op_s = '1' and reg_r1(3) = '0') else
                 (others => '0');
     data_in_bank <= immediate_extended when ld_op_s = '1' else
                     out_accumulator when move_op_s = '1' and reg_r1(3) = '0' else
-                    out_ULA when addi_op_s = '1' or subi_op_s = '1' else
+                   -- out_ULA when addi_op_s = '1' or subi_op_s = '1' else
                     (others => '0');
-    bank_wr_en <= '1' when ld_op_s = '1' or (move_op_s = '1' and reg_r1(3) = '0') or (addi_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") or
-                (subi_op_s = '1' and reg_r1(3) = '0' and out_sm = "01")  or (clr_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") else
+    bank_wr_en <= '1' when ld_op_s = '1' or (move_op_s = '1' and reg_r1(3) = '0') or 
+                --(addi_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") or
+                --(subi_op_s = '1' and reg_r1(3) = '0' and out_sm = "01")  or 
+                (clr_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") else
                 '0';
 
     -- for ADD, SUBTRACT, ADDI, SUBI
@@ -317,6 +318,8 @@ begin
                         '1' when ld_op_s = '1' and reg_r1(3) = '1' else
                         '1' when move_op_s = '1' and reg_r1(3) = '1' else
                         '1' when clr_op_s = '1' and reg_r1(3) = '1' else
+                        '1' when addi_op_s = '1' and out_sm = "01" else
+                        '1' when subi_op_s = '1' and out_sm = "01" else
                         '0';
 
     -- updating PC
