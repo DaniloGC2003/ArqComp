@@ -37,7 +37,10 @@ architecture a_ULA of ULA is
                 '1' when select_operation = "01" and in2 < in1 else '0'; -- editar depois.
                     -- overflow sum: inputs with same signs and result has different sign
                     -- overflow sub: inputs with different signs and result has different sign from in1
+
+                    --two operands with same sign and result has different sign
         overflow <= '1' when select_operation = "00" and (in1(15) = in2(15)) and (sum_result(15) /= in1(15)) else 
+                    --two operands with different signs and result has different sign from in1
                     '1' when select_operation = "01" and (in2(15) /= in1(15)) and (sub_result(15) /= in2(15)) else
                     '0';
         zero <= '1' when final_result = "0000000000000000" else '0';

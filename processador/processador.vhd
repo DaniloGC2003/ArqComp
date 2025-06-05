@@ -39,6 +39,7 @@ architecture a_processador of processador is
             clr_op   : out std_logic; -- clear operation
             cmpi_op   : out std_logic; -- compare immediate operation
             beq_op   : out std_logic; -- branch if equal operation
+            bvs_op   : out std_logic; -- branch if overflow operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(3 downto 0);
@@ -133,6 +134,7 @@ architecture a_processador of processador is
     signal clr_op_s: std_logic; -- clear operation
     signal cmpi_op_s: std_logic; -- compare immediate operation
     signal beq_op_s: std_logic; -- branch if equal operation
+    signal bvs_op_s: std_logic; -- branch if overflow operation
     signal reg_r1: unsigned(3 downto 0);
 
     signal reg0_out_s: unsigned(15 downto 0);
@@ -162,6 +164,10 @@ architecture a_processador of processador is
     signal reg1bit_zero_wr_en: std_logic;
     signal reg1bit_zero_out: std_logic;
 
+    signal overflow_s: std_logic; -- overflow flag for ULA
+    signal reg1bit_overflow_wr_en: std_logic;
+    signal reg1bit_overflow_out: std_logic;
+
     signal const_register: unsigned(15 downto 0) := "0000000000000010"; -- Example constant register
 begin
     -- PC UC instantiation
@@ -189,6 +195,7 @@ begin
          clr_op   => clr_op_s,
          cmpi_op  => cmpi_op_s,
          beq_op   => beq_op_s,
+         bvs_op   => bvs_op_s,
          instruction => instr_reg_out,
          immediate => immediate_s,
          reg1     => reg_r1,
@@ -251,7 +258,7 @@ begin
             select_operation => ULA_op,
             result => out_ULA,
             carry => open,
-            overflow => open,
+            overflow => overflow_s,
             zero => zero_s
         );
     reg1bit_zero: reg1bit
@@ -262,11 +269,19 @@ begin
             data_in  => zero_s,
             data_out => reg1bit_zero_out
         );
+    reg1bit_overflow: reg1bit
+        port map(
+            clk      => clk,
+            rst      => rst,
+            wr_en    => reg1bit_overflow_wr_en,
+            data_in  => overflow_s,
+            data_out => reg1bit_overflow_out
+        );
 
 
     immediate_extended <= (B"0_0000_0000" & immediate_s) when immediate_s(6) = '0' else
                           (B"1_1111_1111" & immediate_s); -- sign extension for 6-bit immediate
-
+    -- professor permitiu fazer dessa forma
     in_accumulator <= 
         (others => '0') when clr_op_s = '1' and reg_r1(3) = '1' else
         reg0_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "000" else
@@ -332,7 +347,10 @@ begin
     in_uc <= out_ULA(6 downto 0) when beq_op_s = '1' and reg1bit_zero_out = '1' else
               out_pc;
 
+    -- write enable signals for flags
     reg1bit_zero_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1') and out_sm = "01" else
+                            '0';
+    reg1bit_overflow_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1') and out_sm = "01" else
                             '0';
 
     -- sending signals to top level

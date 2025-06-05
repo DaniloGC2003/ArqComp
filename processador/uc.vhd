@@ -16,6 +16,7 @@ use ieee.numeric_std.all;
 --    1000 = clear. 1000_xxxxxxx_ARRR_xxx
 --    1001 = CMPI. 1001_IIIIIII_ARRR_xxx. NOTE: MAKE IT SO THAT THE ALU ONLY UPDATES WHEN IT NEEDS TO EXECUTE AN OPRATIAON
 --    1010 = BEQ. 1010_IIIIIII_xxxx_xxx. If zero_flag = 1, jump according to immediate.
+--    1011 = BVS. 1011_IIIIIII_xxxx_xxx. If overflow_flag = 1, jump according to immediate.
 -- bits [12:6] = immediate
 -- bits [5:2] = reg1
 --
@@ -36,6 +37,7 @@ entity uc is
          clr_op   : out std_logic; -- clear operation
          cmpi_op   : out std_logic; -- compare immediate operation
          beq_op   : out std_logic; -- branch if equal operation
+         bvs_op   : out std_logic; -- branch if overflow operation
          instruction  : in unsigned(16 downto 0);
          immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(3 downto 0);
@@ -48,6 +50,7 @@ architecture a_uc of uc is
    signal immediate_s: unsigned(6 downto 0);
    signal j_en: std_logic;
    signal beq_op_s: std_logic;
+   signal bvs_op_s: std_logic;
 begin
    immediate_s <= instruction(12 downto 6);
    immediate <= immediate_s;
@@ -73,6 +76,9 @@ begin
 
    beq_op_s <= '1' when opcode = "1010" else '0'; -- branch if equal operation
    beq_op <= beq_op_s;
+   
+   bvs_op_s <= '1' when opcode = "1011" else '0'; -- branch if overflow operation
+   bvs_op <= bvs_op_s;
 
    reg1 <= instruction(5 downto 2); -- bits [5:2] = reg1
 
