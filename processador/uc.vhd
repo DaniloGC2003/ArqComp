@@ -17,6 +17,7 @@ use ieee.numeric_std.all;
 --    1001 = CMPI. 1001_IIIIIII_ARRR_xxx. NOTE: MAKE IT SO THAT THE ALU ONLY UPDATES WHEN IT NEEDS TO EXECUTE AN OPRATIAON
 --    1010 = BEQ. 1010_IIIIIII_xxxx_xxx. If zero_flag = 1, jump according to immediate.
 --    1011 = BVS. 1011_IIIIIII_xxxx_xxx. If overflow_flag = 1, jump according to immediate.
+--    1100 = LUI. 1100_III_III_III_xxxx. Load 9-bit upper immediate into reg1.
 -- bits [12:6] = immediate
 -- bits [5:2] = reg1
 --
@@ -30,6 +31,7 @@ entity uc is
          jump_en      : out std_logic;
          add_op       : out std_logic;
          ld_op        : out std_logic; -- load immediate operation
+         lui_op      : out std_logic; -- load upper immediate operation
          subtract_op : out std_logic; -- subtract operation
          move_op    : out std_logic; -- move operation
          addi_op   : out std_logic; -- add immediate operation
@@ -41,7 +43,8 @@ entity uc is
          instruction  : in unsigned(16 downto 0);
          immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(3 downto 0);
-         zero_flag    : in std_logic
+         zero_flag    : in std_logic;
+         overflow_flag: in std_logic
    );
 end entity;
 
@@ -61,6 +64,8 @@ begin
    add_op <= '1' when opcode = "0010" else '0';
 
    ld_op <= '1' when opcode = "0011" else '0'; -- load immediate operation
+
+   lui_op <= '1' when opcode = "1100" else '0'; -- load upper immediate operation
 
    subtract_op <= '1' when opcode = "0100" else '0'; -- subtract operation
 
@@ -84,7 +89,7 @@ begin
 
    -- instruction equal to all zeros means the circuit has just been resetted. Next instruction will be the first one.
    data_out <= --(others => '0') when rst = '1' or instruction = "0000000000000000" else
-               data_in when beq_op_s = '1' and zero_flag = '1' else
+               data_in when (beq_op_s = '1' and zero_flag = '1') or (bvs_op_s = '1' and overflow_flag = '1') else
                data_in + 1 when j_en = '0' else 
                immediate_s; -- when j_en = '1'
    
