@@ -41,6 +41,7 @@ architecture a_processador of processador is
             cmpi_op   : out std_logic; -- compare immediate operation
             beq_op   : out std_logic; -- branch if equal operation
             bvs_op   : out std_logic; -- branch if overflow operation
+            bmi_op   : out std_logic; -- branch if negative operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(3 downto 0);
@@ -104,7 +105,8 @@ architecture a_processador of processador is
             result : out unsigned(15 downto 0);
             carry : out std_logic;
             overflow : out std_logic;
-            zero : out std_logic
+            zero : out std_logic;
+            result_sign : out std_logic
         );
     end component;
     component reg1bit is
@@ -138,6 +140,7 @@ architecture a_processador of processador is
     signal cmpi_op_s: std_logic; -- compare immediate operation
     signal beq_op_s: std_logic; -- branch if equal operation
     signal bvs_op_s: std_logic; -- branch if overflow operation
+    signal bmi_op_s: std_logic; -- branch if negative operation
     signal reg_r1: unsigned(3 downto 0);
 
     signal reg0_out_s: unsigned(15 downto 0);
@@ -163,13 +166,20 @@ architecture a_processador of processador is
     signal in_accumulator: unsigned(15 downto 0);
     signal out_accumulator: unsigned(15 downto 0);
 
-    signal zero_s: std_logic; -- zero flag for ULA
+    -- zero flag for ULA
+    signal zero_s: std_logic;
     signal reg1bit_zero_wr_en: std_logic;
     signal reg1bit_zero_out: std_logic;
 
-    signal overflow_s: std_logic; -- overflow flag for ULA
+    -- overflow flag for ULA
+    signal overflow_s: std_logic; 
     signal reg1bit_overflow_wr_en: std_logic;
     signal reg1bit_overflow_out: std_logic;
+
+    -- sign of the result from ULA
+    signal reg1bit_result_sign_s: std_logic; 
+    signal reg1bit_result_sign_wr_en: std_logic;
+    signal reg1bit_result_sign_out: std_logic;
 
     signal const_register: unsigned(15 downto 0) := "0000000000000010"; -- Example constant register
 begin
@@ -200,6 +210,7 @@ begin
         cmpi_op  => cmpi_op_s,
         beq_op   => beq_op_s,
         bvs_op   => bvs_op_s,
+        bmi_op   => bmi_op_s,
         instruction => instr_reg_out,
         immediate => immediate_s,
         reg1     => reg_r1,
@@ -264,7 +275,8 @@ begin
             result => out_ULA,
             carry => open,
             overflow => overflow_s,
-            zero => zero_s
+            zero => zero_s,
+            result_sign => reg1bit_result_sign_s
         );
     reg1bit_zero: reg1bit
         port map(
@@ -282,6 +294,15 @@ begin
             data_in  => overflow_s,
             data_out => reg1bit_overflow_out
         );
+    reg1bit_result_sign: reg1bit
+        port map(
+            clk      => clk,
+            rst      => rst,
+            wr_en    => reg1bit_result_sign_wr_en,
+            data_in  => reg1bit_result_sign_s,
+            data_out => reg1bit_result_sign_out
+        );
+
 
 
     immediate_extended <= (B"0_0000_0000" & immediate_s) when immediate_s(6) = '0' else
@@ -358,6 +379,8 @@ begin
     reg1bit_zero_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1') and out_sm = "01" else
                             '0';
     reg1bit_overflow_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1') and out_sm = "01" else
+                            '0';
+    reg1bit_result_sign_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1') and out_sm = "01" else
                             '0';
 
     -- sending signals to top level

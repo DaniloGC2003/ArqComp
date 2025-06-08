@@ -13,12 +13,14 @@ architecture a_ULA_tb of ULA_tb is
             select_operation : in unsigned(1 downto 0);
             result : out unsigned(15 downto 0);
             carry : out std_logic;
-            overflow : out std_logic
+            overflow : out std_logic;
+            zero : out std_logic;
+            result_sign : out std_logic
         );
     end component;
     signal in1, in2, result : unsigned(15 downto 0);
     signal select_operation : unsigned(1 downto 0);
-    signal carry, overflow : std_logic;
+    signal carry, overflow, zero, result_sign : std_logic;
 
 begin
     uut: ULA port map (
@@ -27,7 +29,9 @@ begin
         select_operation => select_operation,
         result => result,
         carry => carry,
-        overflow => overflow
+        overflow => overflow,
+        zero => zero,
+        result_sign => result_sign
     );
 
     process

@@ -18,6 +18,7 @@ use ieee.numeric_std.all;
 --    1010 = BEQ. 1010_IIIIIII_xxxx_xxx. If zero_flag = 1, jump according to immediate.
 --    1011 = BVS. 1011_IIIIIII_xxxx_xxx. If overflow_flag = 1, jump according to immediate.
 --    1100 = LUI. 1100_III_III_III_xxxx. Load 9-bit upper immediate into reg1.
+--    1101 = BMI. 1101_IIIIIII_xxxx_xxx. If negative_flag = 1, jump according to immediate.
 -- bits [12:6] = immediate
 -- bits [5:2] = reg1
 --
@@ -40,6 +41,7 @@ entity uc is
          cmpi_op   : out std_logic; -- compare immediate operation
          beq_op   : out std_logic; -- branch if equal operation
          bvs_op   : out std_logic; -- branch if overflow operation
+         bmi_op   : out std_logic; -- branch if negative operation
          instruction  : in unsigned(16 downto 0);
          immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(3 downto 0);
@@ -54,6 +56,7 @@ architecture a_uc of uc is
    signal j_en: std_logic;
    signal beq_op_s: std_logic;
    signal bvs_op_s: std_logic;
+   signal bmi_op_s: std_logic;
 begin
    immediate_s <= instruction(12 downto 6);
    immediate <= immediate_s;
@@ -84,6 +87,9 @@ begin
    
    bvs_op_s <= '1' when opcode = "1011" else '0'; -- branch if overflow operation
    bvs_op <= bvs_op_s;
+
+   bmi_op <= '1' when opcode = "1101" else '0'; -- branch if negative operation
+   bmi_op <= bmi_op_s;
 
    reg1 <= instruction(5 downto 2); -- bits [5:2] = reg1
 

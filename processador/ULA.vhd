@@ -10,7 +10,8 @@ entity ULA is
         result : out unsigned(15 downto 0);
         carry : out std_logic;
         overflow : out std_logic;
-        zero : out std_logic
+        zero : out std_logic;
+        result_sign : out std_logic
         -- zero: '1' when result = 0
         --select_operation: "00": sum; "01": substraction; "10": and; "11": or
     );
@@ -44,4 +45,5 @@ architecture a_ULA of ULA is
                     '1' when select_operation = "01" and (in2(15) /= in1(15)) and (sub_result(15) /= in2(15)) else
                     '0';
         zero <= '1' when final_result = "0000000000000000" else '0';
+        result_sign <= '1' when final_result(15) = '1' else '0'; -- sign of the result
     end architecture;
