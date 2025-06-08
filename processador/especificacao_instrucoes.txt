@@ -28,13 +28,13 @@ Os opcodes das instruções implementadas são:
     0101_xxxxxxx_ARRR_xxx
     Se A = 0: reg1 <- A. Se A = 1, A <- reg1.
 
-0110 = ADDI REG,IMM.
-    REG <- REG + IMM
-    0110_IIIIIII_0RRR_xxx
+0110 = ADDI A,IMM.
+    A <- A + IMM
+    0110_IIIIIII_xxxx_xxx
 
-0111 = SUBI REG,IMM
-    REG <- REG - IMM
-    0111_IIIIIII_0RRR_xxx
+0111 = SUBI A,IMM
+    A <- A - IMM
+    0111_IIIIIII_xxxx_xxx
 
 1000 = CLR REG ou CLR A
     1000_xxxxxxx_ARRR_xxx
@@ -43,6 +43,19 @@ Os opcodes das instruções implementadas são:
 1001 = CMPI IMM,REG ou CMPI IMM,A
     1001_IIIIIII_ARRR_xxx
     Se A = 0, CMPI IMM,REG; Se A = 1, CMPI IMM,A
+
+1010 = BEQ IMM
+    1010_IIIIIII_xxxx_xxx
+    Se zero_flag = 1, faz o salto relativo de IMM instruções.
     
+1011 = BVS IMM
+    1011_IIIIIII_xxxx_xxx
+    Se overflow_flag = 1, faz o salto relativo de IMM instruções.
+    
+1101 = BMI IMM
+    1101_IIIIIII_xxxx_xxx
+    Se negative_flag = 1, faz o salto relativo de IMM instruções.
+
+
 0000 e quaisquer outros opcodes que não foram mencionados = nop
     0000_xxxxxxx_xxxx_xxx
