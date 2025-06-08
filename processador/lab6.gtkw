@@ -1,21 +1,22 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Sun Jun 08 01:00:31 2025
+[*] Sun Jun 08 03:27:31 2025
 [*]
 [dumpfile] "C:\Users\chine\Desktop\code\VHDL\ArqComp\processador\processador_tb.ghw"
-[dumpfile_mtime] "Sun Jun 08 00:52:16 2025"
-[dumpfile_size] 13671
+[dumpfile_mtime] "Sun Jun 08 02:53:01 2025"
+[dumpfile_size] 18385
 [savefile] "C:\Users\chine\Desktop\code\VHDL\ArqComp\processador\lab6.gtkw"
-[timestart] 0
+[timestart] 2246000000
 [size] 1920 1009
-[pos] -2033 -113
-*-29.335428 3620000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -2163 -243
+*-28.335428 3750000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.processador_tb.
 [treeopen] top.processador_tb.uut.
 [treeopen] top.processador_tb.uut.acumulador.
 [treeopen] top.processador_tb.uut.reg1bit_result_sign.
 [treeopen] top.processador_tb.uut.reg1bit_zero.
+[treeopen] top.processador_tb.uut.uc_inst.
 [treeopen] top.processador_tb.uut.ula_instance.
 [sst_width] 277
 [signals_width] 257
@@ -137,5 +138,13 @@ top.processador_tb.uut.reg1bit_overflow.data_out
 top.processador_tb.uut.reg1bit_result_sign.data_out
 @200
 -result FF
+@22
+#{top.processador_tb.uut.uc_inst.data_in[6:0]} top.processador_tb.uut.uc_inst.data_in[6] top.processador_tb.uut.uc_inst.data_in[5] top.processador_tb.uut.uc_inst.data_in[4] top.processador_tb.uut.uc_inst.data_in[3] top.processador_tb.uut.uc_inst.data_in[2] top.processador_tb.uut.uc_inst.data_in[1] top.processador_tb.uut.uc_inst.data_in[0]
+@28
+top.processador_tb.uut.reg1bit_result_sign_out
+@29
+top.processador_tb.uut.uc_inst.bmi_op_s
+@28
+top.processador_tb.uut.reg1bit_result_sign_wr_en
 [pattern_trace] 1
 [pattern_trace] 0

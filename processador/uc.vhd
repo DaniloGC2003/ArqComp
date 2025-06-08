@@ -46,7 +46,8 @@ entity uc is
          immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(3 downto 0);
          zero_flag    : in std_logic;
-         overflow_flag: in std_logic
+         overflow_flag: in std_logic;
+         result_sign_flag: in std_logic
    );
 end entity;
 
@@ -88,14 +89,16 @@ begin
    bvs_op_s <= '1' when opcode = "1011" else '0'; -- branch if overflow operation
    bvs_op <= bvs_op_s;
 
-   bmi_op <= '1' when opcode = "1101" else '0'; -- branch if negative operation
+   bmi_op_s <= '1' when opcode = "1101" else '0'; -- branch if negative operation
    bmi_op <= bmi_op_s;
 
    reg1 <= instruction(5 downto 2); -- bits [5:2] = reg1
 
    -- instruction equal to all zeros means the circuit has just been resetted. Next instruction will be the first one.
    data_out <= --(others => '0') when rst = '1' or instruction = "0000000000000000" else
-               data_in when (beq_op_s = '1' and zero_flag = '1') or (bvs_op_s = '1' and overflow_flag = '1') else
+               data_in when (beq_op_s = '1' and zero_flag = '1') or 
+               (bvs_op_s = '1' and overflow_flag = '1') or
+               (bmi_op_s = '1' and result_sign_flag = '1') else
                data_in + 1 when j_en = '0' else 
                immediate_s; -- when j_en = '1'
    

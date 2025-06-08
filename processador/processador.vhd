@@ -46,7 +46,8 @@ architecture a_processador of processador is
             immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(3 downto 0);
             zero_flag    : in std_logic;
-            overflow_flag: in std_logic
+            overflow_flag: in std_logic;
+            result_sign_flag: in std_logic
         );
     end component;
     component rom is
@@ -215,7 +216,8 @@ begin
         immediate => immediate_s,
         reg1     => reg_r1,
         zero_flag => reg1bit_zero_out,
-        overflow_flag => reg1bit_overflow_out
+        overflow_flag => reg1bit_overflow_out,
+        result_sign_flag => reg1bit_result_sign_out
       );
 
     rom_inst: rom
@@ -325,10 +327,10 @@ begin
     in_ULA_A <= immediate_extended when subi_op_s = '1' or addi_op_s = '1' else -- SUBI, ADDI
                 out_accumulator when cmpi_op_s = '1' and reg_r1(3) = '1' else -- CMPI with accumulator
                 data_out_bank when add_op_s = '1' or subtract_op_s = '1' or (cmpi_op_s = '1' and reg_r1(3) = '0') else -- ADD, SUBTRACT, CMPI
-                "000000000" & out_pc when beq_op_s = '1' or bvs_op_s = '1' else -- BEQ BVS
+                "000000000" & out_pc when beq_op_s = '1' or bvs_op_s = '1' or bmi_op_s = '1' else -- BEQ BVS BMI
                 in_ULA_A;
 
-    in_ULA_B <= immediate_extended when cmpi_op_s = '1' or beq_op_s = '1' or bvs_op_s = '1' else -- CMPI, BEQ, BVS
+    in_ULA_B <= immediate_extended when cmpi_op_s = '1' or beq_op_s = '1' or bvs_op_s = '1' or bmi_op_s = '1' else -- CMPI, BEQ, BVS, BMI
                 out_accumulator when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1') else -- and out_sm = "00" else -- ADD, SUBTRACT, ADDI, SUBI
                 in_ULA_B;
 
@@ -372,8 +374,10 @@ begin
     instr_reg_wr_en <= '1' when out_sm = "10" else '0';
 
     -- sending address to UC
-    in_uc <= out_ULA(6 downto 0) when (beq_op_s = '1' and reg1bit_zero_out = '1') or (bvs_op_s = '1' and reg1bit_overflow_out = '1') else
-              out_pc;
+    in_uc <= out_ULA(6 downto 0) when (beq_op_s = '1' and reg1bit_zero_out = '1') or 
+                (bvs_op_s = '1' and reg1bit_overflow_out = '1') or
+                (bmi_op_s = '1' and reg1bit_result_sign_out = '1') else
+                out_pc;
 
     -- write enable signals for flags
     reg1bit_zero_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1') and out_sm = "01" else
