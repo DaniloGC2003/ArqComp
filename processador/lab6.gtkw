@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Sun Jun 08 03:27:31 2025
+[*] Sun Jun 08 15:48:34 2025
 [*]
 [dumpfile] "C:\Users\chine\Desktop\code\VHDL\ArqComp\processador\processador_tb.ghw"
-[dumpfile_mtime] "Sun Jun 08 02:53:01 2025"
-[dumpfile_size] 18385
+[dumpfile_mtime] "Sun Jun 08 15:47:28 2025"
+[dumpfile_size] 118940
 [savefile] "C:\Users\chine\Desktop\code\VHDL\ArqComp\processador\lab6.gtkw"
-[timestart] 2246000000
+[timestart] 89308000000
 [size] 1920 1009
-[pos] -2163 -243
-*-28.335428 3750000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -113 -113
+*-28.335428 89892000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.processador_tb.
 [treeopen] top.processador_tb.uut.
@@ -62,6 +62,9 @@ top.processador_tb.instruction[0]
 @22
 #{top.processador_tb.uut.reg3_out_s[15:0]} top.processador_tb.uut.reg3_out_s[15] top.processador_tb.uut.reg3_out_s[14] top.processador_tb.uut.reg3_out_s[13] top.processador_tb.uut.reg3_out_s[12] top.processador_tb.uut.reg3_out_s[11] top.processador_tb.uut.reg3_out_s[10] top.processador_tb.uut.reg3_out_s[9] top.processador_tb.uut.reg3_out_s[8] top.processador_tb.uut.reg3_out_s[7] top.processador_tb.uut.reg3_out_s[6] top.processador_tb.uut.reg3_out_s[5] top.processador_tb.uut.reg3_out_s[4] top.processador_tb.uut.reg3_out_s[3] top.processador_tb.uut.reg3_out_s[2] top.processador_tb.uut.reg3_out_s[1] top.processador_tb.uut.reg3_out_s[0]
 #{top.processador_tb.uut.reg4_out_s[15:0]} top.processador_tb.uut.reg4_out_s[15] top.processador_tb.uut.reg4_out_s[14] top.processador_tb.uut.reg4_out_s[13] top.processador_tb.uut.reg4_out_s[12] top.processador_tb.uut.reg4_out_s[11] top.processador_tb.uut.reg4_out_s[10] top.processador_tb.uut.reg4_out_s[9] top.processador_tb.uut.reg4_out_s[8] top.processador_tb.uut.reg4_out_s[7] top.processador_tb.uut.reg4_out_s[6] top.processador_tb.uut.reg4_out_s[5] top.processador_tb.uut.reg4_out_s[4] top.processador_tb.uut.reg4_out_s[3] top.processador_tb.uut.reg4_out_s[2] top.processador_tb.uut.reg4_out_s[1] top.processador_tb.uut.reg4_out_s[0]
+@23
+#{top.processador_tb.uut.reg5_out_s[15:0]} top.processador_tb.uut.reg5_out_s[15] top.processador_tb.uut.reg5_out_s[14] top.processador_tb.uut.reg5_out_s[13] top.processador_tb.uut.reg5_out_s[12] top.processador_tb.uut.reg5_out_s[11] top.processador_tb.uut.reg5_out_s[10] top.processador_tb.uut.reg5_out_s[9] top.processador_tb.uut.reg5_out_s[8] top.processador_tb.uut.reg5_out_s[7] top.processador_tb.uut.reg5_out_s[6] top.processador_tb.uut.reg5_out_s[5] top.processador_tb.uut.reg5_out_s[4] top.processador_tb.uut.reg5_out_s[3] top.processador_tb.uut.reg5_out_s[2] top.processador_tb.uut.reg5_out_s[1] top.processador_tb.uut.reg5_out_s[0]
+@22
 #{top.processador_tb.accumulator_out[15:0]} top.processador_tb.accumulator_out[15] top.processador_tb.accumulator_out[14] top.processador_tb.accumulator_out[13] top.processador_tb.accumulator_out[12] top.processador_tb.accumulator_out[11] top.processador_tb.accumulator_out[10] top.processador_tb.accumulator_out[9] top.processador_tb.accumulator_out[8] top.processador_tb.accumulator_out[7] top.processador_tb.accumulator_out[6] top.processador_tb.accumulator_out[5] top.processador_tb.accumulator_out[4] top.processador_tb.accumulator_out[3] top.processador_tb.accumulator_out[2] top.processador_tb.accumulator_out[1] top.processador_tb.accumulator_out[0]
 @c00022
 #{top.processador_tb.uut.in_ula_a[15:0]} top.processador_tb.uut.in_ula_a[15] top.processador_tb.uut.in_ula_a[14] top.processador_tb.uut.in_ula_a[13] top.processador_tb.uut.in_ula_a[12] top.processador_tb.uut.in_ula_a[11] top.processador_tb.uut.in_ula_a[10] top.processador_tb.uut.in_ula_a[9] top.processador_tb.uut.in_ula_a[8] top.processador_tb.uut.in_ula_a[7] top.processador_tb.uut.in_ula_a[6] top.processador_tb.uut.in_ula_a[5] top.processador_tb.uut.in_ula_a[4] top.processador_tb.uut.in_ula_a[3] top.processador_tb.uut.in_ula_a[2] top.processador_tb.uut.in_ula_a[1] top.processador_tb.uut.in_ula_a[0]
@@ -142,9 +145,7 @@ top.processador_tb.uut.reg1bit_result_sign.data_out
 #{top.processador_tb.uut.uc_inst.data_in[6:0]} top.processador_tb.uut.uc_inst.data_in[6] top.processador_tb.uut.uc_inst.data_in[5] top.processador_tb.uut.uc_inst.data_in[4] top.processador_tb.uut.uc_inst.data_in[3] top.processador_tb.uut.uc_inst.data_in[2] top.processador_tb.uut.uc_inst.data_in[1] top.processador_tb.uut.uc_inst.data_in[0]
 @28
 top.processador_tb.uut.reg1bit_result_sign_out
-@29
 top.processador_tb.uut.uc_inst.bmi_op_s
-@28
 top.processador_tb.uut.reg1bit_result_sign_wr_en
 [pattern_trace] 1
 [pattern_trace] 0
