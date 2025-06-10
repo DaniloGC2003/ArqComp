@@ -42,6 +42,7 @@ architecture a_processador of processador is
             beq_op   : out std_logic; -- branch if equal operation
             bvs_op   : out std_logic; -- branch if overflow operation
             bmi_op   : out std_logic; -- branch if negative operation
+            sw_op   : out std_logic; -- store word operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(3 downto 0);
@@ -110,6 +111,7 @@ architecture a_processador of processador is
             result_sign : out std_logic
         );
     end component;
+    -- component for flags
     component reg1bit is
         port( clk      : in std_logic;
               rst      : in std_logic;
@@ -118,6 +120,16 @@ architecture a_processador of processador is
               data_out : out std_logic
         );
     end component;
+    -- Component for RAM
+    component ram is
+        port( clk      : in std_logic;
+              endereco : in unsigned(6 downto 0);
+              wr_en    : in std_logic;
+              dado_in  : in unsigned(15 downto 0);
+              dado_out : out unsigned(15 downto 0)
+        );
+    end component;
+
     
     signal out_pc: unsigned(6 downto 0);
     signal out_uc: unsigned(6 downto 0);
@@ -142,6 +154,7 @@ architecture a_processador of processador is
     signal beq_op_s: std_logic; -- branch if equal operation
     signal bvs_op_s: std_logic; -- branch if overflow operation
     signal bmi_op_s: std_logic; -- branch if negative operation
+    signal sw_op_s: std_logic; -- store word operation
     signal reg_r1: unsigned(3 downto 0);
 
     signal reg0_out_s: unsigned(15 downto 0);
@@ -182,6 +195,10 @@ architecture a_processador of processador is
     signal reg1bit_result_sign_wr_en: std_logic;
     signal reg1bit_result_sign_out: std_logic;
 
+    -- RAM signals
+    signal ram_wr_en: std_logic;
+    signal ram_dado_in: unsigned(15 downto 0);
+    signal ram_dado_out: unsigned(15 downto 0);
 begin
     -- PC UC instantiation
     pc_inst: pc
@@ -211,6 +228,7 @@ begin
         beq_op   => beq_op_s,
         bvs_op   => bvs_op_s,
         bmi_op   => bmi_op_s,
+        sw_op    => sw_op_s,
         instruction => instr_reg_out,
         immediate => immediate_s,
         reg1     => reg_r1,
@@ -306,6 +324,16 @@ begin
             data_out => reg1bit_result_sign_out
         );
 
+    -- RAM instantiation
+    ram_inst: ram
+        port map(
+            clk      => clk,
+            endereco => data_out_bank(6 downto 0), -- using the lower 7 bits of the bank output as address
+            wr_en    => ram_wr_en,
+            dado_in  => ram_dado_in,
+            dado_out => ram_dado_out
+        );
+
 
 
     immediate_extended <= (B"0_0000_0000" & immediate_s) when immediate_s(6) = '0' else
@@ -348,10 +376,10 @@ begin
                 (clr_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") else
                 '0';
 
-    -- for ADD, SUBTRACT, ADDI, SUBI
-    bank_reg_r <= reg_r1(2 downto 0) when (add_op_s = '1' or subtract_op_s = '1' or cmpi_op_s = '1')
-    and reg_r1(3) = '0' else
-        "111"; -- default value, means no register selected
+    -- for ADD, SUBTRACT, ADDI, SUBI, SW
+    bank_reg_r <= reg_r1(2 downto 0) when ((add_op_s = '1' or subtract_op_s = '1' or cmpi_op_s = '1') and reg_r1(3) = '0') or
+                (sw_op_s = '1') else
+                "111"; -- default value, means no register selected
     ULA_op <= "00" when add_op_s = '1' or addi_op_s = '1' else
             "01" when subtract_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1' else
             (others => '0');

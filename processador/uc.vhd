@@ -19,6 +19,7 @@ use ieee.numeric_std.all;
 --    1011 = BVS. 1011_IIIIIII_xxxx_xxx. If overflow_flag = 1, jump according to immediate.
 --    1100 = LUI. 1100_III_III_III_xxxx. Load 9-bit upper immediate into reg1.
 --    1101 = BMI. 1101_IIIIIII_xxxx_xxx. If negative_flag = 1, jump according to immediate.
+--    1110 = SW. 1110_xxxxxxx_xRRR_xxx. Store data from accumulator into RAM, using RRR's value as the address.
 -- bits [12:6] = immediate
 -- bits [5:2] = reg1
 --
@@ -42,6 +43,7 @@ entity uc is
          beq_op   : out std_logic; -- branch if equal operation
          bvs_op   : out std_logic; -- branch if overflow operation
          bmi_op   : out std_logic; -- branch if negative operation
+         sw_op   : out std_logic; -- store word operation
          instruction  : in unsigned(16 downto 0);
          immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(3 downto 0);
@@ -91,7 +93,9 @@ begin
 
    bmi_op_s <= '1' when opcode = "1101" else '0'; -- branch if negative operation
    bmi_op <= bmi_op_s;
-
+   
+   sw_op <= '1' when opcode = "1110" else '0'; -- store word operation
+   
    reg1 <= instruction(5 downto 2); -- bits [5:2] = reg1
 
    -- instruction equal to all zeros means the circuit has just been resetted. Next instruction will be the first one.
