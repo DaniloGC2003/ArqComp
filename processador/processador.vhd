@@ -43,6 +43,7 @@ architecture a_processador of processador is
             bvs_op   : out std_logic; -- branch if overflow operation
             bmi_op   : out std_logic; -- branch if negative operation
             sw_op   : out std_logic; -- store word operation
+            lw_op   : out std_logic; -- load word operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(3 downto 0);
@@ -155,6 +156,7 @@ architecture a_processador of processador is
     signal bvs_op_s: std_logic; -- branch if overflow operation
     signal bmi_op_s: std_logic; -- branch if negative operation
     signal sw_op_s: std_logic; -- store word operation
+    signal lw_op_s: std_logic; -- load word operation
     signal reg_r1: unsigned(3 downto 0);
 
     signal reg0_out_s: unsigned(15 downto 0);
@@ -229,6 +231,7 @@ begin
         bvs_op   => bvs_op_s,
         bmi_op   => bmi_op_s,
         sw_op    => sw_op_s,
+        lw_op    => lw_op_s,
         instruction => instr_reg_out,
         immediate => immediate_s,
         reg1     => reg_r1,
@@ -341,6 +344,7 @@ begin
 
     -- professor permitiu fazer dessa forma
     in_accumulator <= 
+        ram_dado_out when lw_op_s = '1' else -- LW
         (others => '0') when clr_op_s = '1' and reg_r1(3) = '1' else
         instr_reg_out(12 downto 4) & "0000000" when lui_op_s = '1' else -- LUI
         reg0_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "000" else
@@ -378,7 +382,8 @@ begin
 
     -- for ADD, SUBTRACT, ADDI, SUBI, SW
     bank_reg_r <= reg_r1(2 downto 0) when ((add_op_s = '1' or subtract_op_s = '1' or cmpi_op_s = '1') and reg_r1(3) = '0') or
-                (sw_op_s = '1') else
+                (sw_op_s = '1') or
+                (lw_op_s = '1') else
                 "111"; -- default value, means no register selected
     ULA_op <= "00" when add_op_s = '1' or addi_op_s = '1' else
             "01" when subtract_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1' else
@@ -390,6 +395,7 @@ begin
                         '1' when clr_op_s = '1' and reg_r1(3) = '1' else
                         '1' when addi_op_s = '1' and out_sm = "01" else
                         '1' when subi_op_s = '1' and out_sm = "01" else
+                        '1' when lw_op_s = '1' and out_sm = "01" else
                         '0';
 
     -- updating PC
@@ -411,6 +417,14 @@ begin
                             '0';
     reg1bit_result_sign_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1') and out_sm = "01" else
                             '0';
+
+    -- RAM signals
+    ram_wr_en <= '1' when sw_op_s = '1' and out_sm = "01" else
+                '0';
+    ram_dado_in <= out_accumulator when sw_op_s = '1' or lw_op_s = '1' else
+                   (others => '0');
+    
+
 
     -- sending signals to top level
     instruction <= instr_reg_out;
