@@ -56,6 +56,11 @@ Os opcodes das instruções implementadas são:
     1101_IIIIIII_xxxx_xxx
     Se negative_flag = 1, faz o salto relativo de IMM instruções.
 
+1110 = Operação de memória
+    1110_xxxxxxx_xRRR_xSS
+    Se SS = 00, a operação é SW. Se SS = 01, a operação é LW.
+    Operação SW: armazena os dados contidos no acumulador no endereço RRR da RAM.
+    Operação LW: carrega no acumulador os dados contidos no endereço RRR da RAM.
 
 0000 e quaisquer outros opcodes que não foram mencionados = nop
     0000_xxxxxxx_xxxx_xxx

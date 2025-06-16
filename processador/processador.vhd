@@ -158,6 +158,7 @@ architecture a_processador of processador is
     signal sw_op_s: std_logic; -- store word operation
     signal lw_op_s: std_logic; -- load word operation
     signal reg_r1: unsigned(3 downto 0);
+    signal reg_r2: unsigned(2 downto 0);
 
     signal reg0_out_s: unsigned(15 downto 0);
     signal reg1_out_s: unsigned(15 downto 0);
@@ -201,6 +202,7 @@ architecture a_processador of processador is
     signal ram_wr_en: std_logic;
     signal ram_dado_in: unsigned(15 downto 0);
     signal ram_dado_out: unsigned(15 downto 0);
+    signal ram_endereco: unsigned(6 downto 0);
 begin
     -- PC UC instantiation
     pc_inst: pc
@@ -331,20 +333,19 @@ begin
     ram_inst: ram
         port map(
             clk      => clk,
-            endereco => data_out_bank(6 downto 0), -- using the lower 7 bits of the bank output as address
+            endereco => ram_endereco,
             wr_en    => ram_wr_en,
             dado_in  => ram_dado_in,
             dado_out => ram_dado_out
         );
 
-
+    reg_r2 <=  instr_reg_out(8 downto 6);
 
     immediate_extended <= (B"0_0000_0000" & immediate_s) when immediate_s(6) = '0' else
                           (B"1_1111_1111" & immediate_s); -- sign extension for 6-bit immediate
 
     -- professor permitiu fazer dessa forma
     in_accumulator <= 
-        ram_dado_out when lw_op_s = '1' else -- LW
         (others => '0') when clr_op_s = '1' and reg_r1(3) = '1' else
         instr_reg_out(12 downto 4) & "0000000" when lui_op_s = '1' else -- LUI
         reg0_out_s when move_op_s = '1' and reg_r1(3) = '1' and reg_r1(2 downto 0) = "000" else
@@ -369,21 +370,26 @@ begin
                 in_ULA_B;
 
     -- for LD, MOVE, CLR
-    bank_reg_wr <= reg_r1(2 downto 0) when (ld_op_s = '1' and reg_r1(3) = '0') or
+    bank_reg_wr <= reg_r1(2 downto 0) when --(ld_op_s = '1' and reg_r1(3) = '0') or
                 (move_op_s = '1' and reg_r1(3) = '0') or 
                 (clr_op_s = '1' and reg_r1(3) = '0') else
+                reg_r2 when (lw_op_s = '1') else
                 (others => '0');
-    data_in_bank <= immediate_extended when ld_op_s = '1' else
+    data_in_bank <= --immediate_extended when ld_op_s = '1' else
                     out_accumulator when move_op_s = '1' and reg_r1(3) = '0' else
+                    ram_dado_out when lw_op_s = '1' else
                     (others => '0');
-    bank_wr_en <= '1' when ld_op_s = '1' or (move_op_s = '1' and reg_r1(3) = '0') or 
+    bank_wr_en <= '1' when --ld_op_s = '1' or 
+                (move_op_s = '1' and reg_r1(3) = '0') or 
                 (clr_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") else
+                '1' when (lw_op_s = '1' and out_sm = "01") else
                 '0';
 
     -- for ADD, SUBTRACT, ADDI, SUBI, SW
     bank_reg_r <= reg_r1(2 downto 0) when ((add_op_s = '1' or subtract_op_s = '1' or cmpi_op_s = '1') and reg_r1(3) = '0') or
-                (sw_op_s = '1') or
+                ((sw_op_s = '1') and (out_sm = "00")) or -- for LW: read address first
                 (lw_op_s = '1') else
+                reg_r2 when (sw_op_s = '1') and out_sm = "01" else
                 "111"; -- default value, means no register selected
     ULA_op <= "00" when add_op_s = '1' or addi_op_s = '1' else
             "01" when subtract_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1' else
@@ -395,7 +401,6 @@ begin
                         '1' when clr_op_s = '1' and reg_r1(3) = '1' else
                         '1' when addi_op_s = '1' and out_sm = "01" else
                         '1' when subi_op_s = '1' and out_sm = "01" else
-                        '1' when lw_op_s = '1' and out_sm = "01" else
                         '0';
 
     -- updating PC
@@ -419,12 +424,15 @@ begin
                             '0';
 
     -- RAM signals
-    ram_wr_en <= '1' when sw_op_s = '1' and out_sm = "01" else
+    ram_wr_en <= '1' when sw_op_s = '1' and out_sm = "10" else
                 '0';
-    ram_dado_in <= out_accumulator when sw_op_s = '1' or lw_op_s = '1' else
+                --out_accumulator when sw_op_s = '1' or lw_op_s = '1' else
+    ram_dado_in <= data_out_bank when sw_op_s = '1' and out_sm = "01" else 
+                   ram_dado_in when sw_op_s = '1' else
                    (others => '0');
-    
-
+    ram_endereco <= data_out_bank(6 downto 0) when (sw_op_s = '1' and out_sm = "00") or lw_op_s = '1' else
+                    ram_endereco when sw_op_s = '1' else
+                    (others => '0');
 
     -- sending signals to top level
     instruction <= instr_reg_out;

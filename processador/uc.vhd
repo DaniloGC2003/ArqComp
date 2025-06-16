@@ -19,8 +19,8 @@ use ieee.numeric_std.all;
 --    1011 = BVS. 1011_IIIIIII_xxxx_xxx. If overflow_flag = 1, jump according to immediate.
 --    1100 = LUI. 1100_III_III_III_xxxx. Load 9-bit upper immediate into reg1.
 --    1101 = BMI. 1101_IIIIIII_xxxx_xxx. If negative_flag = 1, jump according to immediate.
---    1110 .. 00 = SW. 1110_xxxxxxx_xRRR_x00. Store data from accumulator into RAM, using RRR's value as the address.
---    1110 .. 01 = LW. 1111_xxxxxxx_xRRR_x01. Load data from RAM into accumulator, using RRR's value as the address.
+--    1110 .. 00 = SW. 1110_xxxxSSS_ARRR_x00. Store data from accumulator into RAM, using RRR's value as the address.
+--    1110 .. 01 = LW. 1111_xxxxSSS_ARRR_x01. Load data from RAM into accumulator, using RRR's value as the address.
 
 -- bits [12:6] = immediate
 -- bits [5:2] = reg1
