@@ -5,7 +5,6 @@ use ieee.numeric_std.all;
 -- bits [16:13] = opcode
 -- opcodes: 
 --    1111 = jump. 1111_JJJJJJJ_xxxx_xxx.
---    0001 = nop
 --    0000 = nop
 --    0010 = add.  0010_xxxxxxx_xRRR_xxx. A <- A + reg1
 --    0011 = load immediate. Reg1 <- immediate. 0011_xxxxxxx_ARRR_xxx. A = 1, load into accumulator
@@ -21,6 +20,7 @@ use ieee.numeric_std.all;
 --    1101 = BMI. 1101_IIIIIII_xxxx_xxx. If negative_flag = 1, jump according to immediate.
 --    1110 .. 00 = SW. 1110_xxxxSSS_ARRR_x00. Store data from accumulator into RAM, using RRR's value as the address.
 --    1110 .. 01 = LW. 1111_xxxxSSS_ARRR_x01. Load data from RAM into accumulator, using RRR's value as the address.
+--    0001 = DJNZ. 0001_JJJJJJJ_xRRR_xxx. If zero_flag != 0, RRR -= 1 and absolute jump according to immediate.
 
 -- bits [12:6] = immediate
 -- bits [5:2] = reg1
@@ -47,6 +47,7 @@ entity uc is
          bmi_op   : out std_logic; -- branch if negative operation
          sw_op   : out std_logic; -- store word operation
          lw_op   : out std_logic; -- load word operation
+         djnz_op   : out std_logic; -- decrement and jump if not zero operation
          instruction  : in unsigned(16 downto 0);
          immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(3 downto 0);
@@ -64,6 +65,7 @@ architecture a_uc of uc is
    signal beq_op_s: std_logic;
    signal bvs_op_s: std_logic;
    signal bmi_op_s: std_logic;
+   signal djnz_op_s: std_logic;
 begin
    immediate_s <= instruction(12 downto 6);
    immediate <= immediate_s;
@@ -103,6 +105,9 @@ begin
 
    lw_op <= '1' when opcode = "1110" and identifier = "01" else '0'; -- load word operation
 
+   djnz_op_s <= '1' when opcode = "0001" else '0'; -- decrement and jump if not zero operation
+   djnz_op <= djnz_op_s;
+
    reg1 <= instruction(5 downto 2); -- bits [5:2] = reg1
 
    -- instruction equal to all zeros means the circuit has just been resetted. Next instruction will be the first one.
@@ -110,7 +115,7 @@ begin
                data_in when (beq_op_s = '1' and zero_flag = '1') or 
                (bvs_op_s = '1' and overflow_flag = '1') or
                (bmi_op_s = '1' and result_sign_flag = '1') else
-               data_in + 1 when j_en = '0' else 
-               immediate_s; -- when j_en = '1'
-   
+               immediate_s when j_en = '1' or (djnz_op_s = '1' and zero_flag = '0') else -- when j_en = '1'
+               data_in + 1 when j_en = '0';
+
 end architecture;

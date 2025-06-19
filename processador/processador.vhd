@@ -44,6 +44,7 @@ architecture a_processador of processador is
             bmi_op   : out std_logic; -- branch if negative operation
             sw_op   : out std_logic; -- store word operation
             lw_op   : out std_logic; -- load word operation
+            djnz_op   : out std_logic; -- decrement and jump if not zero operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(3 downto 0);
@@ -157,6 +158,7 @@ architecture a_processador of processador is
     signal bmi_op_s: std_logic; -- branch if negative operation
     signal sw_op_s: std_logic; -- store word operation
     signal lw_op_s: std_logic; -- load word operation
+    signal djnz_op_s: std_logic; -- decrement and jump if not zero operation
     signal reg_r1: unsigned(3 downto 0);
     signal reg_r2: unsigned(2 downto 0);
 
@@ -234,6 +236,7 @@ begin
         bmi_op   => bmi_op_s,
         sw_op    => sw_op_s,
         lw_op    => lw_op_s,
+        djnz_op  => djnz_op_s,
         instruction => instr_reg_out,
         immediate => immediate_s,
         reg1     => reg_r1,
@@ -361,37 +364,42 @@ begin
 
     in_ULA_A <= immediate_extended when subi_op_s = '1' or addi_op_s = '1' else -- SUBI, ADDI
                 out_accumulator when cmpi_op_s = '1' and reg_r1(3) = '1' else -- CMPI with accumulator
-                data_out_bank when add_op_s = '1' or subtract_op_s = '1' or (cmpi_op_s = '1' and reg_r1(3) = '0') else -- ADD, SUBTRACT, CMPI
+                data_out_bank when add_op_s = '1' or subtract_op_s = '1' or (cmpi_op_s = '1' and reg_r1(3) = '0') or djnz_op_s = '1' else -- ADD, SUBTRACT, CMPI
                 "000000000" & out_pc when beq_op_s = '1' or bvs_op_s = '1' or bmi_op_s = '1' else -- BEQ BVS BMI
                 in_ULA_A;
 
     in_ULA_B <= immediate_extended when cmpi_op_s = '1' or beq_op_s = '1' or bvs_op_s = '1' or bmi_op_s = '1' else -- CMPI, BEQ, BVS, BMI
                 out_accumulator when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1') else -- ADD, SUBTRACT, ADDI, SUBI
+                "1111111111111111" when djnz_op_s = '1' else -- DJNZ
                 in_ULA_B;
 
     -- for LD, MOVE, CLR
     bank_reg_wr <= reg_r1(2 downto 0) when --(ld_op_s = '1' and reg_r1(3) = '0') or
                 (move_op_s = '1' and reg_r1(3) = '0') or 
-                (clr_op_s = '1' and reg_r1(3) = '0') else
+                (clr_op_s = '1' and reg_r1(3) = '0') or
+                (djnz_op_s = '1' and reg1bit_zero_out = '0') else
                 reg_r2 when (lw_op_s = '1') else
                 (others => '0');
     data_in_bank <= --immediate_extended when ld_op_s = '1' else
                     out_accumulator when move_op_s = '1' and reg_r1(3) = '0' else
                     ram_dado_out when lw_op_s = '1' else
+                    out_ULA when djnz_op_s = '1' and reg1bit_zero_out = '0' else
                     (others => '0');
     bank_wr_en <= '1' when --ld_op_s = '1' or 
                 (move_op_s = '1' and reg_r1(3) = '0') or 
-                (clr_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") else
+                (clr_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") or
+                (djnz_op_s = '1' and reg1bit_zero_out = '0' and out_sm = "01") else
                 '1' when (lw_op_s = '1' and out_sm = "01") else
                 '0';
 
     -- for ADD, SUBTRACT, ADDI, SUBI, SW
     bank_reg_r <= reg_r1(2 downto 0) when ((add_op_s = '1' or subtract_op_s = '1' or cmpi_op_s = '1') and reg_r1(3) = '0') or
                 ((sw_op_s = '1') and (out_sm = "00")) or -- for LW: read address first
-                (lw_op_s = '1') else
+                (lw_op_s = '1') or
+                (djnz_op_s = '1') else
                 reg_r2 when (sw_op_s = '1') and out_sm = "01" else
                 "111"; -- default value, means no register selected
-    ULA_op <= "00" when add_op_s = '1' or addi_op_s = '1' else
+    ULA_op <= "00" when add_op_s = '1' or addi_op_s = '1' or djnz_op_s = '1' else
             "01" when subtract_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1' else
             (others => '0');
     accumulator_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1') and out_sm = "01" else
