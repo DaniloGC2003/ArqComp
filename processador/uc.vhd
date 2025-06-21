@@ -13,7 +13,7 @@ use ieee.numeric_std.all;
 --    0110 = addi. 0110_IIIIIII_0RRR_xxx. I = immediate, RRR = reg1. reg1 += I.
 --    0111 = subi. 0111_IIIIIII_0RRR_xxx. I = immediate, RRR = reg1. reg1 -= I.
 --    1000 = clear. 1000_xxxxxxx_ARRR_xxx
---    1001 = CMPI. 1001_IIIIIII_ARRR_xxx. NOTE: MAKE IT SO THAT THE ALU ONLY UPDATES WHEN IT NEEDS TO EXECUTE AN OPRATIAON
+--    1001 = CMPI. 1001_IIIIIII_ARRR_xxx.
 --    1010 = BEQ. 1010_IIIIIII_xxxx_xxx. If zero_flag = 1, jump according to immediate.
 --    1011 = BVS. 1011_IIIIIII_xxxx_xxx. If overflow_flag = 1, jump according to immediate.
 --    1100 = LUI. 1100_III_III_III_xxxx. Load 9-bit upper immediate into reg1.
@@ -48,6 +48,7 @@ entity uc is
          sw_op   : out std_logic; -- store word operation
          lw_op   : out std_logic; -- load word operation
          djnz_op   : out std_logic; -- decrement and jump if not zero operation
+         djnz_zero_flag : in std_logic; -- zero flag for DJNZ operation
          instruction  : in unsigned(16 downto 0);
          immediate    : out unsigned(6 downto 0);
          reg1         : out unsigned(3 downto 0);
@@ -115,7 +116,7 @@ begin
                data_in when (beq_op_s = '1' and zero_flag = '1') or 
                (bvs_op_s = '1' and overflow_flag = '1') or
                (bmi_op_s = '1' and result_sign_flag = '1') else
-               immediate_s when j_en = '1' or (djnz_op_s = '1' and zero_flag = '0') else -- when j_en = '1'
+               immediate_s when j_en = '1' or (djnz_op_s = '1' and djnz_zero_flag = '0') else 
                data_in + 1 when j_en = '0';
 
 end architecture;

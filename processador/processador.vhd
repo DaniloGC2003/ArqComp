@@ -45,6 +45,7 @@ architecture a_processador of processador is
             sw_op   : out std_logic; -- store word operation
             lw_op   : out std_logic; -- load word operation
             djnz_op   : out std_logic; -- decrement and jump if not zero operation
+            djnz_zero_flag : in std_logic; -- zero flag for DJNZ operation
             instruction  : in unsigned(16 downto 0);
             immediate    : out unsigned(6 downto 0);
             reg1         : out unsigned(3 downto 0);
@@ -159,6 +160,7 @@ architecture a_processador of processador is
     signal sw_op_s: std_logic; -- store word operation
     signal lw_op_s: std_logic; -- load word operation
     signal djnz_op_s: std_logic; -- decrement and jump if not zero operation
+    signal djnz_zero_flag_s: std_logic; -- zero flag for DJNZ operation
     signal reg_r1: unsigned(3 downto 0);
     signal reg_r2: unsigned(2 downto 0);
 
@@ -237,6 +239,7 @@ begin
         sw_op    => sw_op_s,
         lw_op    => lw_op_s,
         djnz_op  => djnz_op_s,
+        djnz_zero_flag => djnz_zero_flag_s,
         instruction => instr_reg_out,
         immediate => immediate_s,
         reg1     => reg_r1,
@@ -377,18 +380,18 @@ begin
     bank_reg_wr <= reg_r1(2 downto 0) when --(ld_op_s = '1' and reg_r1(3) = '0') or
                 (move_op_s = '1' and reg_r1(3) = '0') or 
                 (clr_op_s = '1' and reg_r1(3) = '0') or
-                (djnz_op_s = '1' and reg1bit_zero_out = '0') else
+                (djnz_op_s = '1') else
                 reg_r2 when (lw_op_s = '1') else
                 (others => '0');
     data_in_bank <= --immediate_extended when ld_op_s = '1' else
                     out_accumulator when move_op_s = '1' and reg_r1(3) = '0' else
                     ram_dado_out when lw_op_s = '1' else
-                    out_ULA when djnz_op_s = '1' and reg1bit_zero_out = '0' else
+                    out_ULA when djnz_op_s = '1' else
                     (others => '0');
     bank_wr_en <= '1' when --ld_op_s = '1' or 
                 (move_op_s = '1' and reg_r1(3) = '0') or 
                 (clr_op_s = '1' and reg_r1(3) = '0' and out_sm = "01") or
-                (djnz_op_s = '1' and reg1bit_zero_out = '0' and out_sm = "01") else
+                (djnz_op_s = '1' and out_sm = "01") else
                 '1' when (lw_op_s = '1' and out_sm = "01") else
                 '0';
 
@@ -424,7 +427,8 @@ begin
                 out_pc;
 
     -- write enable signals for flags
-    reg1bit_zero_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1') and out_sm = "01" else
+    reg1bit_zero_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1' or djnz_op_s = '1') and out_sm = "01" else
+                            '1' when (djnz_op_s = '1' and out_sm = "00") else
                             '0';
     reg1bit_overflow_wr_en <= '1' when (add_op_s = '1' or subtract_op_s = '1' or addi_op_s = '1' or subi_op_s = '1' or cmpi_op_s = '1') and out_sm = "01" else
                             '0';
@@ -441,6 +445,8 @@ begin
     ram_endereco <= data_out_bank(6 downto 0) when (sw_op_s = '1' and out_sm = "00") or lw_op_s = '1' else
                     ram_endereco when sw_op_s = '1' else
                     (others => '0');
+
+    djnz_zero_flag_s <= zero_s;
 
     -- sending signals to top level
     instruction <= instr_reg_out;
