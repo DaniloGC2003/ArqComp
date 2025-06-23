@@ -77,7 +77,7 @@ architecture a_rom of rom is
          -- DJNZ 13,R0
             35  => B"0001_0011111_0000_00", -- DJNZ 31,R0
          
-      -- write prime numbers into R0
+      -- write prime numbers into R5
          -- reset R0 (R0 <= 31) and R4 (R4 <= 1)
             36  => B"0011_0011111_1000_00", -- ld A,31
             37  => B"0101_0000000_0000_00", -- mv R0,A
