@@ -10,15 +10,13 @@ end entity;
 architecture a_rom of rom is
    type mem is array (0 to 127) of unsigned(16 downto 0);
    constant conteudo_rom : mem := ( 
-      -- R2: stores the current value to be used in the RAM
-      -- R3: stores the current address to be used in the RAM
-
-      -- R0: iterator
+      -- R0: loop iterator
          0  => B"0011_0100000_1000_00", -- ld A,32
          1  => B"0101_0000000_0000_00", -- mv R0,A
       -- R1: address and data to be used in RAM
          2  => B"0011_0000001_1000_00", -- ld A,1
          3  => B"0101_0000000_0001_00", -- mv R1,A
+      
 
       -- Fill up RAM addrs 1 to 32
          -- Store R1 in R1
@@ -27,9 +25,10 @@ architecture a_rom of rom is
             5  => B"0101_0000000_1001_00", -- mv A,R1
             6  => B"0110_0000001_0100_00", -- addi 1
             7  => B"0101_0000000_0001_00", -- mv R1,A
-         -- DJNZ 4,R4
+         -- DJNZ 4,R0
             8  => B"0001_0000100_0000_00", -- DJNZ 4,R0
 
+      -- R4: keeps track of the current RAM address
       -- Remove multiples of 2
          -- clear A and R4
             9  => B"1000_0000000_1000_00", -- clr A
@@ -43,9 +42,55 @@ architecture a_rom of rom is
             15 => B"0101_0000000_0100_00", -- mv R4,A
          -- SW R2 (storing 0) into address R4
             16  => B"1110_0000010_0100_00", -- SW R2,R4
-            --17 => B"0101_0000000_1100_00", -- mv A,R4
          -- DJNZ 13,R0
             17  => B"0001_0001101_0000_00", -- DJNZ 13,R0
+      
+      -- Remove multiples of 3
+         -- clear A and R4
+            18  => B"1000_0000000_1000_00", -- clr A
+            19 => B"0101_0000000_0100_00", -- mv R4,A
+         -- R0 <= 10 (loop will be executed 10 times)
+            20  => B"0011_0001010_1000_00", -- ld A,10
+            21  => B"0101_0000000_0000_00", -- mv R0,A 
+         -- R4 += 3
+            22  => B"0101_0000000_1100_00", -- mv A,R4
+            23  => B"0110_0000011_0100_00", -- addi 3
+            24 => B"0101_0000000_0100_00", -- mv R4,A
+         -- SW R2 (storing 0) into address R4
+            25  => B"1110_0000010_0100_00", -- SW R2,R4
+         -- DJNZ 22,R0
+            26  => B"0001_0010110_0000_00", -- DJNZ 22,R0
+      
+      -- Remove multiples of 5
+         -- clear A and R4
+            27  => B"1000_0000000_1000_00", -- clr A
+            28 => B"0101_0000000_0100_00", -- mv R4,A
+         -- R0 <= 6 (loop will be executed 6 times)
+            29  => B"0011_0000110_1000_00", -- ld A,6
+            30  => B"0101_0000000_0000_00", -- mv R0,A 
+         -- R4 += 5
+            31  => B"0101_0000000_1100_00", -- mv A,R4
+            32  => B"0110_0000101_0100_00", -- addi 5
+            33 => B"0101_0000000_0100_00", -- mv R4,A
+         -- SW R2 (storing 0) into address R4
+            34  => B"1110_0000010_0100_00", -- SW R2,R4
+         -- DJNZ 13,R0
+            35  => B"0001_0011111_0000_00", -- DJNZ 31,R0
+         
+      -- write prime numbers into R0
+         -- reset R0 (R0 <= 31) and R4 (R4 <= 1)
+            36  => B"0011_0011111_1000_00", -- ld A,31
+            37  => B"0101_0000000_0000_00", -- mv R0,A
+            38  => B"0011_0000001_1000_00", -- ld A,1
+            39  => B"0101_0000000_0100_00", -- mv R4,A
+         -- R4 += 1
+            40 => B"0101_0000000_1100_00", -- mv A,R4
+            41 => B"0110_0000001_0100_00", -- addi 1
+            42 => B"0101_0000000_0100_00", -- mv R4,A
+         -- LW R5 R0
+            43 => B"1110_0000101_0100_01", -- SW R5,R4
+         -- Repeat 31 times
+            44 => B"0001_0101000_0000_00", -- DJNZ 40,R0
 
 
 
