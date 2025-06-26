@@ -62,5 +62,10 @@ Os opcodes das instruções implementadas são:
     Operação SW: armazena o conteúdo de QQQ na RAM no endereço dado por RRR
     Operação LW: carrega no registrador QQQ o contúdo da RAM no endereço RRR.
 
+0001 = DJNZ
+    0001_JJJJJJJ_xRRR_xxx
+    Decrementa o registrador no endereço RRR. 
+    Se, após a operação, seu valor é diferente de 0, realiza um pulo absoluto usando o imediato JJJJJJJ
+
 0000 e quaisquer outros opcodes que não foram mencionados = nop
     0000_xxxxxxx_xxxx_xxx
